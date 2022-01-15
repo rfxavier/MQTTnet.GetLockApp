@@ -418,6 +418,18 @@ namespace MQTTnet.GetLockApp.WinForm
                 string dataCurrencyBREJ = payload.DATA.RREJ;
                 string dataCurrencyEnvelope = payload.DATA.ENV;
                 string dataCurrencyEnvelopeTotal = payload.DATA.RENV;
+                Nullable<DateTime> dataTmstBeginDateTime = null;
+                Nullable<DateTime> dataTmstEndDateTime = null;
+
+                if (dataTmstBegin != null)
+                {
+                    dataTmstBeginDateTime = UnixTimeStampToDateTime(Convert.ToInt64(dataTmstBegin));
+                }
+
+                if (dataTmstEnd != null)
+                {
+                    dataTmstEndDateTime = UnixTimeStampToDateTime(Convert.ToInt64(dataTmstEnd));
+                }
 
                 SqlConnection conn = new SqlConnection(@$"Server={ConfigurationManager.AppSettings["sqlServer"]};Database={ConfigurationManager.AppSettings["sqlServerDatabase"]};User Id={ConfigurationManager.AppSettings["sqlServerUser"]};Password={ConfigurationManager.AppSettings["sqlServerPassword"]};");
                 conn.Open();
@@ -433,7 +445,7 @@ namespace MQTTnet.GetLockApp.WinForm
                     {
                         reader.Close();
 
-                        string insert_query = "INSERT INTO message (id_cofre, info_id, info_ip, info_mac, info_json, data_hash, data_tmst_begin, data_tmst_end, data_user, data_type, data_currency_total, data_currency_bill_2, data_currency_bill_5, data_currency_bill_10, data_currency_bill_20, data_currency_bill_50, data_currency_bill_100, data_currency_bill_200, data_currency_bill_rejected, data_currency_envelope, data_currency_envelope_total) VALUES (@idCofre, @infoId, @infoIp, @infoMac, @infoJson, @dataHash, @dataTmstBegin, @dataTmstEnd, @dataUser, @dataType, @dataCurrencyTotal, @dataCurrencyB2, @dataCurrencyB5, @dataCurrencyB10, @dataCurrencyB20, @dataCurrencyB50, @dataCurrencyB100, @dataCurrencyB200, @dataCurrencyBREJ, @dataCurrencyEnvelope, @dataCurrencyEnvelopeTotal)";
+                        string insert_query = "INSERT INTO message (id_cofre, info_id, info_ip, info_mac, info_json, data_hash, data_tmst_begin, data_tmst_begin_datetime, data_tmst_end, data_tmst_end_datetime, data_user, data_type, data_currency_total, data_currency_bill_2, data_currency_bill_5, data_currency_bill_10, data_currency_bill_20, data_currency_bill_50, data_currency_bill_100, data_currency_bill_200, data_currency_bill_rejected, data_currency_envelope, data_currency_envelope_total) VALUES (@idCofre, @infoId, @infoIp, @infoMac, @infoJson, @dataHash, @dataTmstBegin, @dataTmstBeginDateTime, @dataTmstEnd, @dataTmstEndDateTime, @dataUser, @dataType, @dataCurrencyTotal, @dataCurrencyB2, @dataCurrencyB5, @dataCurrencyB10, @dataCurrencyB20, @dataCurrencyB50, @dataCurrencyB100, @dataCurrencyB200, @dataCurrencyBREJ, @dataCurrencyEnvelope, @dataCurrencyEnvelopeTotal)";
                         SqlCommand cmd = new SqlCommand(insert_query, conn);
 
                         cmd.Parameters.AddWithValue("@idCofre", idCofre == null ? DBNull.Value : idCofre);
@@ -444,7 +456,9 @@ namespace MQTTnet.GetLockApp.WinForm
 
                         cmd.Parameters.AddWithValue("@dataHash", dataHash == null ? DBNull.Value : dataHash);
                         cmd.Parameters.AddWithValue("@dataTmstBegin", dataTmstBegin == null ? DBNull.Value : dataTmstBegin);
+                        cmd.Parameters.AddWithValue("@dataTmstBeginDateTime", dataTmstBeginDateTime == null ? DBNull.Value : dataTmstBeginDateTime);
                         cmd.Parameters.AddWithValue("@dataTmstEnd", dataTmstEnd == null ? DBNull.Value : dataTmstEnd);
+                        cmd.Parameters.AddWithValue("@dataTmstEndDateTime", dataTmstEndDateTime == null ? DBNull.Value : dataTmstEndDateTime);
                         cmd.Parameters.AddWithValue("@dataUser", dataUser == null ? DBNull.Value : dataUser);
                         cmd.Parameters.AddWithValue("@dataType", dataType == null ? DBNull.Value : dataType);
                         cmd.Parameters.AddWithValue("@dataCurrencyTotal", dataCurrencyTotal == null ? DBNull.Value : dataCurrencyTotal);
@@ -514,6 +528,13 @@ namespace MQTTnet.GetLockApp.WinForm
             return ".";
         }
 
+        public static DateTime UnixTimeStampToDateTime(double unixTimeStamp)
+        {
+            // Unix timestamp is seconds past epoch
+            DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            dateTime = dateTime.AddSeconds(unixTimeStamp).ToLocalTime();
+            return dateTime;
+        }
         /// <summary>
         /// The method that handles the text changes in the text box.
         /// </summary>
