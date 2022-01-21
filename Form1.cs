@@ -445,7 +445,21 @@ namespace MQTTnet.GetLockApp.WinForm
                     {
                         reader.Close();
 
-                        string insert_query = "INSERT INTO message (id_cofre, info_id, info_ip, info_mac, info_json, data_hash, data_tmst_begin, data_tmst_begin_datetime, data_tmst_end, data_tmst_end_datetime, data_user, data_type, data_currency_total, data_currency_bill_2, data_currency_bill_5, data_currency_bill_10, data_currency_bill_20, data_currency_bill_50, data_currency_bill_100, data_currency_bill_200, data_currency_bill_rejected, data_currency_envelope, data_currency_envelope_total) VALUES (@idCofre, @infoId, @infoIp, @infoMac, @infoJson, @dataHash, @dataTmstBegin, @dataTmstBeginDateTime, @dataTmstEnd, @dataTmstEndDateTime, @dataUser, @dataType, @dataCurrencyTotal, @dataCurrencyB2, @dataCurrencyB5, @dataCurrencyB10, @dataCurrencyB20, @dataCurrencyB50, @dataCurrencyB100, @dataCurrencyB200, @dataCurrencyBREJ, @dataCurrencyEnvelope, @dataCurrencyEnvelopeTotal)";
+                        SqlCommand command2 = new SqlCommand("select cod_loja from cofre where id_cofre=@idCofre", conn);
+                        command2.Parameters.AddWithValue("@idCofre", idCofre);
+
+                        string codLoja = null;
+
+                        using (SqlDataReader reader2 = command2.ExecuteReader())
+                        {
+                            if (reader2.Read())
+                            {
+                                codLoja = reader2["cod_loja"].ToString();
+                            }
+                            reader2.Close();
+                        }
+                        
+                        string insert_query = "INSERT INTO message (id_cofre, info_id, info_ip, info_mac, info_json, data_hash, data_tmst_begin, data_tmst_begin_datetime, data_tmst_end, data_tmst_end_datetime, data_user, data_type, data_currency_total, data_currency_bill_2, data_currency_bill_5, data_currency_bill_10, data_currency_bill_20, data_currency_bill_50, data_currency_bill_100, data_currency_bill_200, data_currency_bill_rejected, data_currency_envelope, data_currency_envelope_total, cod_loja) VALUES (@idCofre, @infoId, @infoIp, @infoMac, @infoJson, @dataHash, @dataTmstBegin, @dataTmstBeginDateTime, @dataTmstEnd, @dataTmstEndDateTime, @dataUser, @dataType, @dataCurrencyTotal, @dataCurrencyB2, @dataCurrencyB5, @dataCurrencyB10, @dataCurrencyB20, @dataCurrencyB50, @dataCurrencyB100, @dataCurrencyB200, @dataCurrencyBREJ, @dataCurrencyEnvelope, @dataCurrencyEnvelopeTotal, @codLoja)";
                         SqlCommand cmd = new SqlCommand(insert_query, conn);
 
                         cmd.Parameters.AddWithValue("@idCofre", idCofre == null ? DBNull.Value : idCofre);
@@ -472,6 +486,8 @@ namespace MQTTnet.GetLockApp.WinForm
                         cmd.Parameters.AddWithValue("@dataCurrencyBREJ", dataCurrencyBREJ == null ? DBNull.Value : dataCurrencyBREJ);
                         cmd.Parameters.AddWithValue("@dataCurrencyEnvelope", dataCurrencyEnvelope == null ? DBNull.Value : dataCurrencyEnvelope);
                         cmd.Parameters.AddWithValue("@dataCurrencyEnvelopeTotal", dataCurrencyEnvelopeTotal == null ? DBNull.Value : dataCurrencyEnvelopeTotal);
+                        
+                        cmd.Parameters.AddWithValue("@codLoja", codLoja == null ? DBNull.Value : codLoja);
 
                         cmd.ExecuteNonQuery();
                     }
