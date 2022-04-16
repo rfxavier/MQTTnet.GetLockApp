@@ -418,6 +418,9 @@ namespace MQTTnet.GetLockApp.WinForm
                 string dataCurrencyBREJ = payload.DATA.RREJ;
                 string dataCurrencyEnvelope = payload.DATA.ENV;
                 string dataCurrencyEnvelopeTotal = payload.DATA.RENV;
+                string dataCurrencyBill = payload.DATA.TBILL;
+                string dataCurrencyBillTotal = payload.DATA.RTBILL;
+                string dataSensor = payload.DATA.SENSOR;
                 Nullable<DateTime> dataTmstBeginDateTime = null;
                 Nullable<DateTime> dataTmstEndDateTime = null;
 
@@ -459,7 +462,7 @@ namespace MQTTnet.GetLockApp.WinForm
                             reader2.Close();
                         }
                         
-                        string insert_query = "INSERT INTO message (id_cofre, info_id, info_ip, info_mac, info_json, data_hash, data_tmst_begin, data_tmst_begin_datetime, data_tmst_end, data_tmst_end_datetime, data_user, data_type, data_currency_total, data_currency_bill_2, data_currency_bill_5, data_currency_bill_10, data_currency_bill_20, data_currency_bill_50, data_currency_bill_100, data_currency_bill_200, data_currency_bill_rejected, data_currency_envelope, data_currency_envelope_total, cod_loja) VALUES (@idCofre, @infoId, @infoIp, @infoMac, @infoJson, @dataHash, @dataTmstBegin, @dataTmstBeginDateTime, @dataTmstEnd, @dataTmstEndDateTime, @dataUser, @dataType, @dataCurrencyTotal, @dataCurrencyB2, @dataCurrencyB5, @dataCurrencyB10, @dataCurrencyB20, @dataCurrencyB50, @dataCurrencyB100, @dataCurrencyB200, @dataCurrencyBREJ, @dataCurrencyEnvelope, @dataCurrencyEnvelopeTotal, @codLoja)";
+                        string insert_query = "INSERT INTO message (id_cofre, info_id, info_ip, info_mac, info_json, data_hash, data_tmst_begin, data_tmst_begin_datetime, data_tmst_end, data_tmst_end_datetime, data_user, data_type, data_currency_total, data_currency_bill_2, data_currency_bill_5, data_currency_bill_10, data_currency_bill_20, data_currency_bill_50, data_currency_bill_100, data_currency_bill_200, data_currency_bill_rejected, data_currency_envelope, data_currency_envelope_total, cod_loja, data_currency_bill, data_currency_bill_total, data_sensor) VALUES (@idCofre, @infoId, @infoIp, @infoMac, @infoJson, @dataHash, @dataTmstBegin, @dataTmstBeginDateTime, @dataTmstEnd, @dataTmstEndDateTime, @dataUser, @dataType, @dataCurrencyTotal, @dataCurrencyB2, @dataCurrencyB5, @dataCurrencyB10, @dataCurrencyB20, @dataCurrencyB50, @dataCurrencyB100, @dataCurrencyB200, @dataCurrencyBREJ, @dataCurrencyEnvelope, @dataCurrencyEnvelopeTotal, @codLoja, @dataCurrencyBill, @dataCurrencyBillTotal, @dataSensor)";
                         SqlCommand cmd = new SqlCommand(insert_query, conn);
 
                         cmd.Parameters.AddWithValue("@idCofre", idCofre == null ? DBNull.Value : idCofre);
@@ -488,6 +491,10 @@ namespace MQTTnet.GetLockApp.WinForm
                         cmd.Parameters.AddWithValue("@dataCurrencyEnvelopeTotal", dataCurrencyEnvelopeTotal == null ? DBNull.Value : dataCurrencyEnvelopeTotal);
                         
                         cmd.Parameters.AddWithValue("@codLoja", codLoja == null ? DBNull.Value : codLoja);
+
+                        cmd.Parameters.AddWithValue("@dataCurrencyBill", dataCurrencyBill == null ? DBNull.Value : dataCurrencyBill);
+                        cmd.Parameters.AddWithValue("@dataCurrencyBillTotal", dataCurrencyBillTotal == null ? DBNull.Value : dataCurrencyBillTotal);
+                        cmd.Parameters.AddWithValue("@dataSensor", dataSensor == null ? DBNull.Value : dataSensor);
 
                         cmd.ExecuteNonQuery();
                     }
