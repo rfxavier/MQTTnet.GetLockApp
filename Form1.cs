@@ -800,6 +800,28 @@ namespace MQTTnet.GetLockApp.WinForm
                     cmd.Parameters.AddWithValue("@IsAck", IsAck);
 
                     cmd.ExecuteNonQuery();
+
+                    conn.Close();
+
+                    try
+                    {
+                        if(!IsAck)
+                        {
+                            var ackTopic = $"/{idCofre}/COMMAND";
+                            var ackPayload = $@"{{ ""ACK"": {{ ""COMMAND"": {{ ""DESTINY"": {idCofre}, ""CMD"": ""GET-STATUS"" }} }} }}";
+                            var message = new MqttApplicationMessageBuilder().WithTopic(ackTopic).WithPayload(ackPayload).WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce).WithRetainFlag(false).Build();
+
+                            if (this.managedMqttClientPublisher != null)
+                            {
+                                Task.Run(async () => await this.managedMqttClientPublisher.PublishAsync(message));
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Error Occurs", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+
                 }
             }
             else 
