@@ -388,7 +388,7 @@ namespace MQTTnet.GetLockApp.WinForm
             {
                 dynamic payload = JsonConvert.DeserializeObject(x.ApplicationMessage.ConvertPayloadToString().Replace("\"$", "\"R")
                     .Replace("GET-STATUS", "GET_STATUS")
-                    .Replace("DEVICE-SENSORS", "DEVICE_SENSORS")
+                    .Replace("DEVICE-STATUS", "DEVICE_STATUS")
                     .Replace("BILLMACHINE-STATUS", "BILLMACHINE_STATUS")
                     .Replace("BILLMACHINE-ERROR", "BILLMACHINE_ERROR")
                     .Replace("LEVEL-SENSOR", "LEVEL_SENSOR")
@@ -541,8 +541,10 @@ namespace MQTTnet.GetLockApp.WinForm
                         MessageBox.Show(ex.Message, "Error Occurs", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
-                else if (payload.ACK.COMMAND.GET_STATUS != null)
+                else if ((payload.ACK?.COMMAND.GET_STATUS != null) || (payload.COMMAND.GET_STATUS != null))
                 {
+                    var IsAck = payload.ACK?.COMMAND.GET_STATUS != null;
+
                     string idCofre = "";
 
                     string[] splicedTopic = x.ApplicationMessage.Topic.Split('/', StringSplitOptions.None);
@@ -552,49 +554,49 @@ namespace MQTTnet.GetLockApp.WinForm
                         idCofre = splicedTopic[1];
                     }
 
-                    int TopicDeviceId = int.TryParse(idCofre, out TopicDeviceId) ? TopicDeviceId : 0; ;
-                    long? Destiny = payload.ACK.COMMAND.DESTINY;
+                    string TopicDeviceId = idCofre;
+                    long? Destiny = IsAck ? payload.ACK.COMMAND.DESTINY : payload.COMMAND.DESTINY;
 
-                    long? DeviceSensors = payload.ACK.COMMAND.GET_STATUS.DEVICE_SENSORS;
+                    long? DeviceStatus = IsAck ? payload.ACK.COMMAND.GET_STATUS.DEVICE_STATUS : payload.COMMAND.GET_STATUS.DEVICE_STATUS;
 
-                    long DeviceSensorsValue = DeviceSensors == null ? 0 : (long)DeviceSensors;
-                    string DeviceSensorsBinaryValue = Convert.ToString(DeviceSensorsValue, 2);
+                    long DeviceStatusValue = DeviceStatus == null ? 0 : (long)DeviceStatus;
+                    string DeviceStatusBinaryValue = Convert.ToString(DeviceStatusValue, 2);
 
-                    string DeviceSensorsBits = DeviceSensorsBinaryValue.PadLeft(32, '0');
-                    long DeviceSensorsBit0 = Convert.ToInt64(DeviceSensorsBits.Substring(31, 1));
-                    long DeviceSensorsBit1 = Convert.ToInt64(DeviceSensorsBits.Substring(30, 1));
-                    long DeviceSensorsBit2 = Convert.ToInt64(DeviceSensorsBits.Substring(29, 1));
-                    long DeviceSensorsBit3 = Convert.ToInt64(DeviceSensorsBits.Substring(28, 1));
-                    long DeviceSensorsBit4 = Convert.ToInt64(DeviceSensorsBits.Substring(27, 1));
-                    long DeviceSensorsBit5 = Convert.ToInt64(DeviceSensorsBits.Substring(26, 1));
-                    long DeviceSensorsBit6 = Convert.ToInt64(DeviceSensorsBits.Substring(25, 1));
-                    long DeviceSensorsBit7 = Convert.ToInt64(DeviceSensorsBits.Substring(24, 1));
-                    long DeviceSensorsBit8 = Convert.ToInt64(DeviceSensorsBits.Substring(23, 1));
-                    long DeviceSensorsBit9 = Convert.ToInt64(DeviceSensorsBits.Substring(22, 1));
-                    long DeviceSensorsBit10 = Convert.ToInt64(DeviceSensorsBits.Substring(21, 1));
-                    long DeviceSensorsBit11 = Convert.ToInt64(DeviceSensorsBits.Substring(20, 1));
-                    long DeviceSensorsBit12 = Convert.ToInt64(DeviceSensorsBits.Substring(19, 1));
-                    long DeviceSensorsBit13 = Convert.ToInt64(DeviceSensorsBits.Substring(18, 1));
-                    long DeviceSensorsBit14 = Convert.ToInt64(DeviceSensorsBits.Substring(17, 1));
-                    long DeviceSensorsBit15 = Convert.ToInt64(DeviceSensorsBits.Substring(16, 1));
-                    long DeviceSensorsBit16 = Convert.ToInt64(DeviceSensorsBits.Substring(15, 1));
-                    long DeviceSensorsBit17 = Convert.ToInt64(DeviceSensorsBits.Substring(14, 1));
-                    long DeviceSensorsBit18 = Convert.ToInt64(DeviceSensorsBits.Substring(13, 1));
-                    long DeviceSensorsBit19 = Convert.ToInt64(DeviceSensorsBits.Substring(12, 1));
-                    long DeviceSensorsBit20 = Convert.ToInt64(DeviceSensorsBits.Substring(11, 1));
-                    long DeviceSensorsBit21 = Convert.ToInt64(DeviceSensorsBits.Substring(10, 1));
-                    long DeviceSensorsBit22 = Convert.ToInt64(DeviceSensorsBits.Substring(9, 1));
-                    long DeviceSensorsBit23 = Convert.ToInt64(DeviceSensorsBits.Substring(8, 1));
-                    long DeviceSensorsBit24 = Convert.ToInt64(DeviceSensorsBits.Substring(7, 1));
-                    long DeviceSensorsBit25 = Convert.ToInt64(DeviceSensorsBits.Substring(6, 1));
-                    long DeviceSensorsBit26 = Convert.ToInt64(DeviceSensorsBits.Substring(5, 1));
-                    long DeviceSensorsBit27 = Convert.ToInt64(DeviceSensorsBits.Substring(4, 1));
-                    long DeviceSensorsBit28 = Convert.ToInt64(DeviceSensorsBits.Substring(3, 1));
-                    long DeviceSensorsBit29 = Convert.ToInt64(DeviceSensorsBits.Substring(2, 1));
-                    long DeviceSensorsBit30 = Convert.ToInt64(DeviceSensorsBits.Substring(1, 1));
-                    long DeviceSensorsBit31 = Convert.ToInt64(DeviceSensorsBits.Substring(0, 1));
+                    string DeviceStatusBits = DeviceStatusBinaryValue.PadLeft(32, '0');
+                    long DeviceStatusBit0 = Convert.ToInt64(DeviceStatusBits.Substring(31, 1));
+                    long DeviceStatusBit1 = Convert.ToInt64(DeviceStatusBits.Substring(30, 1));
+                    long DeviceStatusBit2 = Convert.ToInt64(DeviceStatusBits.Substring(29, 1));
+                    long DeviceStatusBit3 = Convert.ToInt64(DeviceStatusBits.Substring(28, 1));
+                    long DeviceStatusBit4 = Convert.ToInt64(DeviceStatusBits.Substring(27, 1));
+                    long DeviceStatusBit5 = Convert.ToInt64(DeviceStatusBits.Substring(26, 1));
+                    long DeviceStatusBit6 = Convert.ToInt64(DeviceStatusBits.Substring(25, 1));
+                    long DeviceStatusBit7 = Convert.ToInt64(DeviceStatusBits.Substring(24, 1));
+                    long DeviceStatusBit8 = Convert.ToInt64(DeviceStatusBits.Substring(23, 1));
+                    long DeviceStatusBit9 = Convert.ToInt64(DeviceStatusBits.Substring(22, 1));
+                    long DeviceStatusBit10 = Convert.ToInt64(DeviceStatusBits.Substring(21, 1));
+                    long DeviceStatusBit11 = Convert.ToInt64(DeviceStatusBits.Substring(20, 1));
+                    long DeviceStatusBit12 = Convert.ToInt64(DeviceStatusBits.Substring(19, 1));
+                    long DeviceStatusBit13 = Convert.ToInt64(DeviceStatusBits.Substring(18, 1));
+                    long DeviceStatusBit14 = Convert.ToInt64(DeviceStatusBits.Substring(17, 1));
+                    long DeviceStatusBit15 = Convert.ToInt64(DeviceStatusBits.Substring(16, 1));
+                    long DeviceStatusBit16 = Convert.ToInt64(DeviceStatusBits.Substring(15, 1));
+                    long DeviceStatusBit17 = Convert.ToInt64(DeviceStatusBits.Substring(14, 1));
+                    long DeviceStatusBit18 = Convert.ToInt64(DeviceStatusBits.Substring(13, 1));
+                    long DeviceStatusBit19 = Convert.ToInt64(DeviceStatusBits.Substring(12, 1));
+                    long DeviceStatusBit20 = Convert.ToInt64(DeviceStatusBits.Substring(11, 1));
+                    long DeviceStatusBit21 = Convert.ToInt64(DeviceStatusBits.Substring(10, 1));
+                    long DeviceStatusBit22 = Convert.ToInt64(DeviceStatusBits.Substring(9, 1));
+                    long DeviceStatusBit23 = Convert.ToInt64(DeviceStatusBits.Substring(8, 1));
+                    long DeviceStatusBit24 = Convert.ToInt64(DeviceStatusBits.Substring(7, 1));
+                    long DeviceStatusBit25 = Convert.ToInt64(DeviceStatusBits.Substring(6, 1));
+                    long DeviceStatusBit26 = Convert.ToInt64(DeviceStatusBits.Substring(5, 1));
+                    long DeviceStatusBit27 = Convert.ToInt64(DeviceStatusBits.Substring(4, 1));
+                    long DeviceStatusBit28 = Convert.ToInt64(DeviceStatusBits.Substring(3, 1));
+                    long DeviceStatusBit29 = Convert.ToInt64(DeviceStatusBits.Substring(2, 1));
+                    long DeviceStatusBit30 = Convert.ToInt64(DeviceStatusBits.Substring(1, 1));
+                    long DeviceStatusBit31 = Convert.ToInt64(DeviceStatusBits.Substring(0, 1));
 
-                    long? BillMachineStatus = payload.ACK.COMMAND.GET_STATUS.BILLMACHINE_STATUS;
+                    long? BillMachineStatus = IsAck ? payload.ACK.COMMAND.GET_STATUS.BILLMACHINE_STATUS : payload.COMMAND.GET_STATUS.BILLMACHINE_STATUS;
 
                     long BillMachineStatusValue = BillMachineStatus == null ? 0 : (long)BillMachineStatus;
                     string BillMachineStatusBinaryValue = Convert.ToString(BillMachineStatusValue, 2);
@@ -633,7 +635,7 @@ namespace MQTTnet.GetLockApp.WinForm
                     long BillMachineStatusBit30 = Convert.ToInt64(BillMachineStatusBits.Substring(1, 1));
                     long BillMachineStatusBit31 = Convert.ToInt64(BillMachineStatusBits.Substring(0, 1));
 
-                    long? BillMachineError = payload.ACK.COMMAND.GET_STATUS.BILLMACHINE_ERROR;
+                    long? BillMachineError = IsAck ? payload.ACK.COMMAND.GET_STATUS.BILLMACHINE_ERROR : payload.COMMAND.GET_STATUS.BILLMACHINE_ERROR;
 
                     long BillMachineErrorValue = BillMachineError == null ? 0 : (long)BillMachineError;
                     string BillMachineErrorBinaryValue = Convert.ToString(BillMachineErrorValue, 2);
@@ -673,50 +675,58 @@ namespace MQTTnet.GetLockApp.WinForm
                     long BillMachineErrorBit30 = Convert.ToInt64(BillMachineErrorBits.Substring(1, 1));
                     long BillMachineErrorBit31 = Convert.ToInt64(BillMachineErrorBits.Substring(0, 1));
 
-                    long? LevelSensor = payload.ACK.COMMAND.GET_STATUS.LEVEL_SENSOR;
-                    long? UptimeSec = payload.ACK.COMMAND.GET_STATUS.UPTIME_SEC;
+                    long? LevelSensor = IsAck ? payload.ACK.COMMAND.GET_STATUS.LEVEL_SENSOR : payload.COMMAND.GET_STATUS.LEVEL_SENSOR;
+                    long? UptimeSec = IsAck ? payload.ACK.COMMAND.GET_STATUS.UPTIME_SEC : payload.COMMAND.GET_STATUS.UPTIME_SEC;
+                    string Timestamp = IsAck ? payload.ACK.COMMAND.GET_STATUS.TIMESTAMP : payload.COMMAND.GET_STATUS.TIMESTAMP;
+                    Nullable<DateTime> TimestampDateTime = null;
+
+                    if (Timestamp != null)
+                    {
+                        TimestampDateTime = UnixTimeStampToDateTime(Convert.ToInt64(Timestamp));
+                    }
+
 
                     SqlConnection conn = new SqlConnection(@$"Server={ConfigurationManager.AppSettings["sqlServer"]};Database={ConfigurationManager.AppSettings["sqlServerDatabase"]};User Id={ConfigurationManager.AppSettings["sqlServerUser"]};Password={ConfigurationManager.AppSettings["sqlServerPassword"]};");
                     conn.Open();
 
-                    string insert_query = "INSERT INTO message_get_status ( TopicDeviceId, Destiny, DeviceSensors, DeviceSensorsBit0, DeviceSensorsBit1, DeviceSensorsBit2, DeviceSensorsBit3, DeviceSensorsBit4, DeviceSensorsBit5, DeviceSensorsBit6, DeviceSensorsBit7, DeviceSensorsBit8, DeviceSensorsBit9, DeviceSensorsBit10, DeviceSensorsBit11, DeviceSensorsBit12, DeviceSensorsBit13, DeviceSensorsBit14, DeviceSensorsBit15, DeviceSensorsBit16, DeviceSensorsBit17, DeviceSensorsBit18, DeviceSensorsBit19, DeviceSensorsBit20, DeviceSensorsBit21, DeviceSensorsBit22, DeviceSensorsBit23, DeviceSensorsBit24, DeviceSensorsBit25, DeviceSensorsBit26, DeviceSensorsBit27, DeviceSensorsBit28, DeviceSensorsBit29, DeviceSensorsBit30, DeviceSensorsBit31, BillMachineStatus, BillMachineStatusBit0, BillMachineStatusBit1, BillMachineStatusBit2, BillMachineStatusBit3, BillMachineStatusBit4, BillMachineStatusBit5, BillMachineStatusBit6, BillMachineStatusBit7, BillMachineStatusBit8, BillMachineStatusBit9, BillMachineStatusBit10, BillMachineStatusBit11, BillMachineStatusBit12, BillMachineStatusBit13, BillMachineStatusBit14, BillMachineStatusBit15, BillMachineStatusBit16, BillMachineStatusBit17, BillMachineStatusBit18, BillMachineStatusBit19, BillMachineStatusBit20, BillMachineStatusBit21, BillMachineStatusBit22, BillMachineStatusBit23, BillMachineStatusBit24, BillMachineStatusBit25, BillMachineStatusBit26, BillMachineStatusBit27, BillMachineStatusBit28, BillMachineStatusBit29, BillMachineStatusBit30, BillMachineStatusBit31, BillMachineError, BillMachineErrorBit0, BillMachineErrorBit1, BillMachineErrorBit2, BillMachineErrorBit3, BillMachineErrorBit4, BillMachineErrorBit5, BillMachineErrorBit6, BillMachineErrorBit7, BillMachineErrorBit8, BillMachineErrorBit9, BillMachineErrorBit10, BillMachineErrorBit11, BillMachineErrorBit12, BillMachineErrorBit13, BillMachineErrorBit14, BillMachineErrorBit15, BillMachineErrorBit16, BillMachineErrorBit17, BillMachineErrorBit18, BillMachineErrorBit19, BillMachineErrorBit20, BillMachineErrorBit21, BillMachineErrorBit22, BillMachineErrorBit23, BillMachineErrorBit24, BillMachineErrorBit25, BillMachineErrorBit26, BillMachineErrorBit27, BillMachineErrorBit28, BillMachineErrorBit29, BillMachineErrorBit30, BillMachineErrorBit31, LevelSensor, UptimeSec) VALUES ( @TopicDeviceId, @Destiny, @DeviceSensors, @DeviceSensorsBit0, @DeviceSensorsBit1, @DeviceSensorsBit2, @DeviceSensorsBit3, @DeviceSensorsBit4, @DeviceSensorsBit5, @DeviceSensorsBit6, @DeviceSensorsBit7, @DeviceSensorsBit8, @DeviceSensorsBit9, @DeviceSensorsBit10, @DeviceSensorsBit11, @DeviceSensorsBit12, @DeviceSensorsBit13, @DeviceSensorsBit14, @DeviceSensorsBit15, @DeviceSensorsBit16, @DeviceSensorsBit17, @DeviceSensorsBit18, @DeviceSensorsBit19, @DeviceSensorsBit20, @DeviceSensorsBit21, @DeviceSensorsBit22, @DeviceSensorsBit23, @DeviceSensorsBit24, @DeviceSensorsBit25, @DeviceSensorsBit26, @DeviceSensorsBit27, @DeviceSensorsBit28, @DeviceSensorsBit29, @DeviceSensorsBit30, @DeviceSensorsBit31, @BillMachineStatus, @BillMachineStatusBit0, @BillMachineStatusBit1, @BillMachineStatusBit2, @BillMachineStatusBit3, @BillMachineStatusBit4, @BillMachineStatusBit5, @BillMachineStatusBit6, @BillMachineStatusBit7, @BillMachineStatusBit8, @BillMachineStatusBit9, @BillMachineStatusBit10, @BillMachineStatusBit11, @BillMachineStatusBit12, @BillMachineStatusBit13, @BillMachineStatusBit14, @BillMachineStatusBit15, @BillMachineStatusBit16, @BillMachineStatusBit17, @BillMachineStatusBit18, @BillMachineStatusBit19, @BillMachineStatusBit20, @BillMachineStatusBit21, @BillMachineStatusBit22, @BillMachineStatusBit23, @BillMachineStatusBit24, @BillMachineStatusBit25, @BillMachineStatusBit26, @BillMachineStatusBit27, @BillMachineStatusBit28, @BillMachineStatusBit29, @BillMachineStatusBit30, @BillMachineStatusBit31, @BillMachineError, @BillMachineErrorBit0, @BillMachineErrorBit1, @BillMachineErrorBit2, @BillMachineErrorBit3, @BillMachineErrorBit4, @BillMachineErrorBit5, @BillMachineErrorBit6, @BillMachineErrorBit7, @BillMachineErrorBit8, @BillMachineErrorBit9, @BillMachineErrorBit10, @BillMachineErrorBit11, @BillMachineErrorBit12, @BillMachineErrorBit13, @BillMachineErrorBit14, @BillMachineErrorBit15, @BillMachineErrorBit16, @BillMachineErrorBit17, @BillMachineErrorBit18, @BillMachineErrorBit19, @BillMachineErrorBit20, @BillMachineErrorBit21, @BillMachineErrorBit22, @BillMachineErrorBit23, @BillMachineErrorBit24, @BillMachineErrorBit25, @BillMachineErrorBit26, @BillMachineErrorBit27, @BillMachineErrorBit28, @BillMachineErrorBit29, @BillMachineErrorBit30, @BillMachineErrorBit31, @LevelSensor, @UptimeSec)";
+                    string insert_query = "INSERT INTO message_get_status ( TopicDeviceId, Destiny, DeviceStatus, DeviceStatusBit0, DeviceStatusBit1, DeviceStatusBit2, DeviceStatusBit3, DeviceStatusBit4, DeviceStatusBit5, DeviceStatusBit6, DeviceStatusBit7, DeviceStatusBit8, DeviceStatusBit9, DeviceStatusBit10, DeviceStatusBit11, DeviceStatusBit12, DeviceStatusBit13, DeviceStatusBit14, DeviceStatusBit15, DeviceStatusBit16, DeviceStatusBit17, DeviceStatusBit18, DeviceStatusBit19, DeviceStatusBit20, DeviceStatusBit21, DeviceStatusBit22, DeviceStatusBit23, DeviceStatusBit24, DeviceStatusBit25, DeviceStatusBit26, DeviceStatusBit27, DeviceStatusBit28, DeviceStatusBit29, DeviceStatusBit30, DeviceStatusBit31, BillMachineStatus, BillMachineStatusBit0, BillMachineStatusBit1, BillMachineStatusBit2, BillMachineStatusBit3, BillMachineStatusBit4, BillMachineStatusBit5, BillMachineStatusBit6, BillMachineStatusBit7, BillMachineStatusBit8, BillMachineStatusBit9, BillMachineStatusBit10, BillMachineStatusBit11, BillMachineStatusBit12, BillMachineStatusBit13, BillMachineStatusBit14, BillMachineStatusBit15, BillMachineStatusBit16, BillMachineStatusBit17, BillMachineStatusBit18, BillMachineStatusBit19, BillMachineStatusBit20, BillMachineStatusBit21, BillMachineStatusBit22, BillMachineStatusBit23, BillMachineStatusBit24, BillMachineStatusBit25, BillMachineStatusBit26, BillMachineStatusBit27, BillMachineStatusBit28, BillMachineStatusBit29, BillMachineStatusBit30, BillMachineStatusBit31, BillMachineError, BillMachineErrorBit0, BillMachineErrorBit1, BillMachineErrorBit2, BillMachineErrorBit3, BillMachineErrorBit4, BillMachineErrorBit5, BillMachineErrorBit6, BillMachineErrorBit7, BillMachineErrorBit8, BillMachineErrorBit9, BillMachineErrorBit10, BillMachineErrorBit11, BillMachineErrorBit12, BillMachineErrorBit13, BillMachineErrorBit14, BillMachineErrorBit15, BillMachineErrorBit16, BillMachineErrorBit17, BillMachineErrorBit18, BillMachineErrorBit19, BillMachineErrorBit20, BillMachineErrorBit21, BillMachineErrorBit22, BillMachineErrorBit23, BillMachineErrorBit24, BillMachineErrorBit25, BillMachineErrorBit26, BillMachineErrorBit27, BillMachineErrorBit28, BillMachineErrorBit29, BillMachineErrorBit30, BillMachineErrorBit31, LevelSensor, UptimeSec, Timestamp, TimestampDateTime, IsAck) VALUES ( @TopicDeviceId, @Destiny, @DeviceStatus, @DeviceStatusBit0, @DeviceStatusBit1, @DeviceStatusBit2, @DeviceStatusBit3, @DeviceStatusBit4, @DeviceStatusBit5, @DeviceStatusBit6, @DeviceStatusBit7, @DeviceStatusBit8, @DeviceStatusBit9, @DeviceStatusBit10, @DeviceStatusBit11, @DeviceStatusBit12, @DeviceStatusBit13, @DeviceStatusBit14, @DeviceStatusBit15, @DeviceStatusBit16, @DeviceStatusBit17, @DeviceStatusBit18, @DeviceStatusBit19, @DeviceStatusBit20, @DeviceStatusBit21, @DeviceStatusBit22, @DeviceStatusBit23, @DeviceStatusBit24, @DeviceStatusBit25, @DeviceStatusBit26, @DeviceStatusBit27, @DeviceStatusBit28, @DeviceStatusBit29, @DeviceStatusBit30, @DeviceStatusBit31, @BillMachineStatus, @BillMachineStatusBit0, @BillMachineStatusBit1, @BillMachineStatusBit2, @BillMachineStatusBit3, @BillMachineStatusBit4, @BillMachineStatusBit5, @BillMachineStatusBit6, @BillMachineStatusBit7, @BillMachineStatusBit8, @BillMachineStatusBit9, @BillMachineStatusBit10, @BillMachineStatusBit11, @BillMachineStatusBit12, @BillMachineStatusBit13, @BillMachineStatusBit14, @BillMachineStatusBit15, @BillMachineStatusBit16, @BillMachineStatusBit17, @BillMachineStatusBit18, @BillMachineStatusBit19, @BillMachineStatusBit20, @BillMachineStatusBit21, @BillMachineStatusBit22, @BillMachineStatusBit23, @BillMachineStatusBit24, @BillMachineStatusBit25, @BillMachineStatusBit26, @BillMachineStatusBit27, @BillMachineStatusBit28, @BillMachineStatusBit29, @BillMachineStatusBit30, @BillMachineStatusBit31, @BillMachineError, @BillMachineErrorBit0, @BillMachineErrorBit1, @BillMachineErrorBit2, @BillMachineErrorBit3, @BillMachineErrorBit4, @BillMachineErrorBit5, @BillMachineErrorBit6, @BillMachineErrorBit7, @BillMachineErrorBit8, @BillMachineErrorBit9, @BillMachineErrorBit10, @BillMachineErrorBit11, @BillMachineErrorBit12, @BillMachineErrorBit13, @BillMachineErrorBit14, @BillMachineErrorBit15, @BillMachineErrorBit16, @BillMachineErrorBit17, @BillMachineErrorBit18, @BillMachineErrorBit19, @BillMachineErrorBit20, @BillMachineErrorBit21, @BillMachineErrorBit22, @BillMachineErrorBit23, @BillMachineErrorBit24, @BillMachineErrorBit25, @BillMachineErrorBit26, @BillMachineErrorBit27, @BillMachineErrorBit28, @BillMachineErrorBit29, @BillMachineErrorBit30, @BillMachineErrorBit31, @LevelSensor, @UptimeSec, @Timestamp, @TimestampDateTime, @IsAck)";
                     SqlCommand cmd = new SqlCommand(insert_query, conn);
 
-                    cmd.Parameters.AddWithValue("@TopicDeviceId", TopicDeviceId);
+                    cmd.Parameters.AddWithValue("@TopicDeviceId", TopicDeviceId == null ? DBNull.Value : TopicDeviceId);
                     cmd.Parameters.AddWithValue("@Destiny", Destiny == null ? DBNull.Value : Destiny);
-                    cmd.Parameters.AddWithValue("@DeviceSensors", DeviceSensors == null ? DBNull.Value : DeviceSensors);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit0", DeviceSensorsBit0 == null ? DBNull.Value : DeviceSensorsBit0);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit1", DeviceSensorsBit1 == null ? DBNull.Value : DeviceSensorsBit1);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit2", DeviceSensorsBit2 == null ? DBNull.Value : DeviceSensorsBit2);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit3", DeviceSensorsBit3 == null ? DBNull.Value : DeviceSensorsBit3);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit4", DeviceSensorsBit4 == null ? DBNull.Value : DeviceSensorsBit4);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit5", DeviceSensorsBit5 == null ? DBNull.Value : DeviceSensorsBit5);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit6", DeviceSensorsBit6 == null ? DBNull.Value : DeviceSensorsBit6);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit7", DeviceSensorsBit7 == null ? DBNull.Value : DeviceSensorsBit7);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit8", DeviceSensorsBit8 == null ? DBNull.Value : DeviceSensorsBit8);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit9", DeviceSensorsBit9 == null ? DBNull.Value : DeviceSensorsBit9);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit10", DeviceSensorsBit10 == null ? DBNull.Value : DeviceSensorsBit10);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit11", DeviceSensorsBit11 == null ? DBNull.Value : DeviceSensorsBit11);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit12", DeviceSensorsBit12 == null ? DBNull.Value : DeviceSensorsBit12);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit13", DeviceSensorsBit13 == null ? DBNull.Value : DeviceSensorsBit13);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit14", DeviceSensorsBit14 == null ? DBNull.Value : DeviceSensorsBit14);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit15", DeviceSensorsBit15 == null ? DBNull.Value : DeviceSensorsBit15);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit16", DeviceSensorsBit16 == null ? DBNull.Value : DeviceSensorsBit16);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit17", DeviceSensorsBit17 == null ? DBNull.Value : DeviceSensorsBit17);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit18", DeviceSensorsBit18 == null ? DBNull.Value : DeviceSensorsBit18);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit19", DeviceSensorsBit19 == null ? DBNull.Value : DeviceSensorsBit19);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit20", DeviceSensorsBit20 == null ? DBNull.Value : DeviceSensorsBit20);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit21", DeviceSensorsBit21 == null ? DBNull.Value : DeviceSensorsBit21);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit22", DeviceSensorsBit22 == null ? DBNull.Value : DeviceSensorsBit22);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit23", DeviceSensorsBit23 == null ? DBNull.Value : DeviceSensorsBit23);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit24", DeviceSensorsBit24 == null ? DBNull.Value : DeviceSensorsBit24);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit25", DeviceSensorsBit25 == null ? DBNull.Value : DeviceSensorsBit25);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit26", DeviceSensorsBit26 == null ? DBNull.Value : DeviceSensorsBit26);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit27", DeviceSensorsBit27 == null ? DBNull.Value : DeviceSensorsBit27);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit28", DeviceSensorsBit28 == null ? DBNull.Value : DeviceSensorsBit28);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit29", DeviceSensorsBit29 == null ? DBNull.Value : DeviceSensorsBit29);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit30", DeviceSensorsBit30 == null ? DBNull.Value : DeviceSensorsBit30);
-                    cmd.Parameters.AddWithValue("@DeviceSensorsBit31", DeviceSensorsBit31 == null ? DBNull.Value : DeviceSensorsBit31);
+                    cmd.Parameters.AddWithValue("@DeviceStatus", DeviceStatus == null ? DBNull.Value : DeviceStatus);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit0", DeviceStatusBit0 == null ? DBNull.Value : DeviceStatusBit0);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit1", DeviceStatusBit1 == null ? DBNull.Value : DeviceStatusBit1);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit2", DeviceStatusBit2 == null ? DBNull.Value : DeviceStatusBit2);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit3", DeviceStatusBit3 == null ? DBNull.Value : DeviceStatusBit3);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit4", DeviceStatusBit4 == null ? DBNull.Value : DeviceStatusBit4);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit5", DeviceStatusBit5 == null ? DBNull.Value : DeviceStatusBit5);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit6", DeviceStatusBit6 == null ? DBNull.Value : DeviceStatusBit6);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit7", DeviceStatusBit7 == null ? DBNull.Value : DeviceStatusBit7);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit8", DeviceStatusBit8 == null ? DBNull.Value : DeviceStatusBit8);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit9", DeviceStatusBit9 == null ? DBNull.Value : DeviceStatusBit9);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit10", DeviceStatusBit10 == null ? DBNull.Value : DeviceStatusBit10);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit11", DeviceStatusBit11 == null ? DBNull.Value : DeviceStatusBit11);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit12", DeviceStatusBit12 == null ? DBNull.Value : DeviceStatusBit12);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit13", DeviceStatusBit13 == null ? DBNull.Value : DeviceStatusBit13);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit14", DeviceStatusBit14 == null ? DBNull.Value : DeviceStatusBit14);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit15", DeviceStatusBit15 == null ? DBNull.Value : DeviceStatusBit15);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit16", DeviceStatusBit16 == null ? DBNull.Value : DeviceStatusBit16);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit17", DeviceStatusBit17 == null ? DBNull.Value : DeviceStatusBit17);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit18", DeviceStatusBit18 == null ? DBNull.Value : DeviceStatusBit18);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit19", DeviceStatusBit19 == null ? DBNull.Value : DeviceStatusBit19);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit20", DeviceStatusBit20 == null ? DBNull.Value : DeviceStatusBit20);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit21", DeviceStatusBit21 == null ? DBNull.Value : DeviceStatusBit21);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit22", DeviceStatusBit22 == null ? DBNull.Value : DeviceStatusBit22);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit23", DeviceStatusBit23 == null ? DBNull.Value : DeviceStatusBit23);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit24", DeviceStatusBit24 == null ? DBNull.Value : DeviceStatusBit24);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit25", DeviceStatusBit25 == null ? DBNull.Value : DeviceStatusBit25);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit26", DeviceStatusBit26 == null ? DBNull.Value : DeviceStatusBit26);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit27", DeviceStatusBit27 == null ? DBNull.Value : DeviceStatusBit27);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit28", DeviceStatusBit28 == null ? DBNull.Value : DeviceStatusBit28);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit29", DeviceStatusBit29 == null ? DBNull.Value : DeviceStatusBit29);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit30", DeviceStatusBit30 == null ? DBNull.Value : DeviceStatusBit30);
+                    cmd.Parameters.AddWithValue("@DeviceStatusBit31", DeviceStatusBit31 == null ? DBNull.Value : DeviceStatusBit31);
                     cmd.Parameters.AddWithValue("@BillMachineStatus", BillMachineStatus == null ? DBNull.Value : BillMachineStatus);
                     cmd.Parameters.AddWithValue("@BillMachineStatusBit0", BillMachineStatusBit0 == null ? DBNull.Value : BillMachineStatusBit0);
                     cmd.Parameters.AddWithValue("@BillMachineStatusBit1", BillMachineStatusBit1 == null ? DBNull.Value : BillMachineStatusBit1);
@@ -785,6 +795,9 @@ namespace MQTTnet.GetLockApp.WinForm
                     cmd.Parameters.AddWithValue("@BillMachineErrorBit31", BillMachineErrorBit31 == null ? DBNull.Value : BillMachineErrorBit31);
                     cmd.Parameters.AddWithValue("@LevelSensor", LevelSensor == null ? DBNull.Value : LevelSensor);
                     cmd.Parameters.AddWithValue("@UptimeSec", UptimeSec == null ? DBNull.Value : UptimeSec);
+                    cmd.Parameters.AddWithValue("@Timestamp", Timestamp == null ? DBNull.Value : Timestamp);
+                    cmd.Parameters.AddWithValue("@TimestampDateTime", TimestampDateTime == null ? DBNull.Value : TimestampDateTime);
+                    cmd.Parameters.AddWithValue("@IsAck", IsAck);
 
                     cmd.ExecuteNonQuery();
                 }
