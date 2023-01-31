@@ -392,7 +392,8 @@ namespace MQTTnet.GetLockApp.WinForm
                     .Replace("BILLMACHINE-STATUS", "BILLMACHINE_STATUS")
                     .Replace("BILLMACHINE-ERROR", "BILLMACHINE_ERROR")
                     .Replace("LEVEL-SENSOR", "LEVEL_SENSOR")
-                    .Replace("UPTIME-SEC", "UPTIME_SEC"));
+                    .Replace("UPTIME-SEC", "UPTIME_SEC")
+                    .Replace("DEV-LOCK", "DEV_LOCK"));
 
                 if (payload.INFO != null & payload.DATA != null)
                 {
@@ -541,9 +542,9 @@ namespace MQTTnet.GetLockApp.WinForm
                         MessageBox.Show(ex.Message, "Error Occurs", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
-                else if ((payload.ACK?.COMMAND.GET_STATUS != null) || (payload.COMMAND.GET_STATUS != null))
+                else if ((payload.ACK?.COMMAND.GET_STATUS != null) || (payload.COMMAND?.GET_STATUS != null))
                 {
-                    var IsAck = payload.ACK?.COMMAND.GET_STATUS != null;
+                    var IsAck = payload.ACK?.COMMAND != null;
 
                     string idCofre = "";
 
@@ -822,6 +823,70 @@ namespace MQTTnet.GetLockApp.WinForm
                         MessageBox.Show(ex.Message, "Error Occurs", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
 
+                }
+                else if ((payload.ACK?.COMMAND["DEV_LOCK"] != null || (payload.COMMAND["DEV_LOCK"] != null)))
+                {
+                    var IsAck = payload.ACK?.COMMAND != null;
+
+                    string idCofre = "";
+
+                    string[] splicedTopic = x.ApplicationMessage.Topic.Split('/', StringSplitOptions.None);
+
+                    if (splicedTopic.Length > 1)
+                    {
+                        idCofre = splicedTopic[1];
+                    }
+
+                    string TopicDeviceId = idCofre;
+                    long? Destiny = IsAck ? payload.ACK.COMMAND.DESTINY : payload.COMMAND.DESTINY;
+
+                    string DevLock = IsAck ? payload.ACK.COMMAND.DEV_LOCK : payload.COMMAND.DEV_LOCK;
+
+                    bool DeviceLockValue = DevLock == null ? false : Convert.ToBoolean(DevLock);
+
+                    string Timestamp = IsAck ? payload.ACK.COMMAND.TIMESTAMP : payload.COMMAND.TIMESTAMP;
+                    Nullable<DateTime> TimestampDateTime = null;
+
+                    if (Timestamp != null)
+                    {
+                        TimestampDateTime = UnixTimeStampToDateTime(Convert.ToInt64(Timestamp));
+                    }
+
+                    SqlConnection conn = new SqlConnection(@$"Server={ConfigurationManager.AppSettings["sqlServer"]};Database={ConfigurationManager.AppSettings["sqlServerDatabase"]};User Id={ConfigurationManager.AppSettings["sqlServerUser"]};Password={ConfigurationManager.AppSettings["sqlServerPassword"]};");
+                    conn.Open();
+
+                    string insert_query = "INSERT INTO message_dev_lock ( TopicDeviceId, Destiny, DevLock, Timestamp, TimestampDateTime, IsAck) VALUES ( @TopicDeviceId, @Destiny, @DevLock, @Timestamp, @TimestampDateTime, @IsAck)";
+                    SqlCommand cmd = new SqlCommand(insert_query, conn);
+
+                    cmd.Parameters.AddWithValue("@TopicDeviceId", TopicDeviceId == null ? DBNull.Value : TopicDeviceId);
+                    cmd.Parameters.AddWithValue("@Destiny", Destiny == null ? DBNull.Value : Destiny);
+                    cmd.Parameters.AddWithValue("@DevLock", DevLock);
+                    cmd.Parameters.AddWithValue("@Timestamp", Timestamp == null ? DBNull.Value : Timestamp);
+                    cmd.Parameters.AddWithValue("@TimestampDateTime", TimestampDateTime == null ? DBNull.Value : TimestampDateTime);
+                    cmd.Parameters.AddWithValue("@IsAck", IsAck);
+
+                    cmd.ExecuteNonQuery();
+
+                    conn.Close();
+
+                    try
+                    {
+                        if (!IsAck)
+                        {
+                            var ackTopic = $"/{idCofre}/COMMAND";
+                            var ackPayload = $@"{{ ""ACK"": {{ ""COMMAND"": {{ ""DESTINY"": {idCofre}, ""CMD"": ""DEV-LOCK"" }} }} }}";
+                            var message = new MqttApplicationMessageBuilder().WithTopic(ackTopic).WithPayload(ackPayload).WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce).WithRetainFlag(false).Build();
+
+                            if (this.managedMqttClientPublisher != null)
+                            {
+                                Task.Run(async () => await this.managedMqttClientPublisher.PublishAsync(message));
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Error Occurs", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
             else 
