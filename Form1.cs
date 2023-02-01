@@ -393,7 +393,10 @@ namespace MQTTnet.GetLockApp.WinForm
                     .Replace("BILLMACHINE-ERROR", "BILLMACHINE_ERROR")
                     .Replace("LEVEL-SENSOR", "LEVEL_SENSOR")
                     .Replace("UPTIME-SEC", "UPTIME_SEC")
-                    .Replace("DEV-LOCK", "DEV_LOCK"));
+                    .Replace("DEV-LOCK", "DEV_LOCK")
+                    .Replace("GET-INFO", "GET_INFO")
+                    .Replace("FIRM-VERSION", "FIRM_VERSION")
+                    .Replace("BILL-MACHINE", "BILL_MACHINE"));
 
                 if (payload.INFO != null & payload.DATA != null)
                 {
@@ -824,7 +827,7 @@ namespace MQTTnet.GetLockApp.WinForm
                     }
 
                 }
-                else if ((payload.ACK?.COMMAND["DEV_LOCK"] != null || (payload.COMMAND["DEV_LOCK"] != null)))
+                else if ((payload.ACK?.COMMAND["DEV_LOCK"] != null || (payload.COMMAND?["DEV_LOCK"] != null)))
                 {
                     var IsAck = payload.ACK?.COMMAND != null;
 
@@ -887,6 +890,84 @@ namespace MQTTnet.GetLockApp.WinForm
                     {
                         MessageBox.Show(ex.Message, "Error Occurs", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
+                }
+                else if ((payload.ACK?.COMMAND.GET_INFO != null) || (payload.COMMAND?.GET_INFO != null))
+                {
+                    var IsAck = payload.ACK?.COMMAND != null;
+
+                    string idCofre = "";
+
+                    string[] splicedTopic = x.ApplicationMessage.Topic.Split('/', StringSplitOptions.None);
+
+                    if (splicedTopic.Length > 1)
+                    {
+                        idCofre = splicedTopic[1];
+                    }
+
+                    string TopicDeviceId = idCofre;
+                    long? Destiny = IsAck ? payload.ACK.COMMAND.DESTINY : payload.COMMAND.DESTINY;
+
+                    string CompanyName = IsAck ? payload.ACK.COMMAND.GET_INFO.COMPANY.NAME : payload.COMMAND.GET_INFO.COMPANY.NAME;
+                    string CompanyCNPJ = IsAck ? payload.ACK.COMMAND.GET_INFO.COMPANY.CNPJ : payload.COMMAND.GET_INFO.COMPANY.CNPJ;
+
+                    string DeviceSN = IsAck ? payload.ACK.COMMAND.GET_INFO.DEVICE.SN : payload.COMMAND.GET_INFO.DEVICE.SN;
+                    string DeviceFirmVersion = IsAck ? payload.ACK.COMMAND.GET_INFO.DEVICE.FIRM_VERSION : payload.COMMAND.GET_INFO.DEVICE.FIRM_VERSION;
+                    bool DeviceBlocked = IsAck ? payload.ACK.COMMAND.GET_INFO.DEVICE.BLOCKED : payload.COMMAND.GET_INFO.DEVICE.BLOCKED;
+
+                    string BillMachineType = IsAck ? payload.ACK.COMMAND.GET_INFO.BILL_MACHINE.TYPE : payload.COMMAND.GET_INFO.BILL_MACHINE.TYPE;
+                    string BillMachineSN = IsAck ? payload.ACK.COMMAND.GET_INFO.BILL_MACHINE.SN : payload.COMMAND.GET_INFO.BILL_MACHINE.SN;
+
+                    string Timestamp = IsAck ? payload.ACK.COMMAND.GET_INFO.TIMESTAMP : payload.COMMAND.GET_INFO.TIMESTAMP;
+                    Nullable<DateTime> TimestampDateTime = null;
+
+                    if (Timestamp != null)
+                    {
+                        TimestampDateTime = UnixTimeStampToDateTime(Convert.ToInt64(Timestamp));
+                    }
+
+                    SqlConnection conn = new SqlConnection(@$"Server={ConfigurationManager.AppSettings["sqlServer"]};Database={ConfigurationManager.AppSettings["sqlServerDatabase"]};User Id={ConfigurationManager.AppSettings["sqlServerUser"]};Password={ConfigurationManager.AppSettings["sqlServerPassword"]};");
+                    conn.Open();
+
+                    string insert_query = "INSERT INTO message_get_info (TopicDeviceId, Destiny, CompanyName, CompanyCNPJ, DeviceSN, DeviceFirmVersion, DeviceBlocked, BillMachineType, BillMachineSN, Timestamp, TimestampDatetime, IsAck) VALUES(@TopicDeviceId, @Destiny, @CompanyName, @CompanyCNPJ, @DeviceSN, @DeviceFirmVersion, @DeviceBlocked, @BillMachineType, @BillMachineSN, @Timestamp, @TimestampDatetime, @IsAck)";
+                    SqlCommand cmd = new SqlCommand(insert_query, conn);
+
+                    cmd.Parameters.AddWithValue("@TopicDeviceId", TopicDeviceId == null ? DBNull.Value : TopicDeviceId);
+                    cmd.Parameters.AddWithValue("@Destiny", Destiny == null ? DBNull.Value : Destiny);
+                    cmd.Parameters.AddWithValue("@CompanyName", CompanyName == null ? DBNull.Value : CompanyName);
+                    cmd.Parameters.AddWithValue("@CompanyCNPJ", CompanyCNPJ == null ? DBNull.Value : CompanyCNPJ);
+                    cmd.Parameters.AddWithValue("@DeviceSN", DeviceSN == null ? DBNull.Value : DeviceSN);
+                    cmd.Parameters.AddWithValue("@DeviceFirmVersion", DeviceFirmVersion == null ? DBNull.Value : DeviceFirmVersion);
+                    cmd.Parameters.AddWithValue("@DeviceBlocked", DeviceBlocked);
+                    cmd.Parameters.AddWithValue("@BillMachineType", BillMachineType == null ? DBNull.Value : BillMachineType);
+                    cmd.Parameters.AddWithValue("@BillMachineSN", BillMachineSN == null ? DBNull.Value : BillMachineSN);
+
+                    cmd.Parameters.AddWithValue("@Timestamp", Timestamp == null ? DBNull.Value : Timestamp);
+                    cmd.Parameters.AddWithValue("@TimestampDateTime", TimestampDateTime == null ? DBNull.Value : TimestampDateTime);
+                    cmd.Parameters.AddWithValue("@IsAck", IsAck);
+
+                    cmd.ExecuteNonQuery();
+
+                    conn.Close();
+
+                    try
+                    {
+                        if (!IsAck)
+                        {
+                            var ackTopic = $"/{idCofre}/COMMAND";
+                            var ackPayload = $@"{{ ""ACK"": {{ ""COMMAND"": {{ ""DESTINY"": {idCofre}, ""CMD"": ""GET-INFO"" }} }} }}";
+                            var message = new MqttApplicationMessageBuilder().WithTopic(ackTopic).WithPayload(ackPayload).WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce).WithRetainFlag(false).Build();
+
+                            if (this.managedMqttClientPublisher != null)
+                            {
+                                Task.Run(async () => await this.managedMqttClientPublisher.PublishAsync(message));
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Error Occurs", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+
                 }
             }
             else 
