@@ -681,7 +681,7 @@ namespace MQTTnet.GetLockApp.WinForm
 
                     long? LevelSensor = IsAck ? payload.ACK.COMMAND.GET_STATUS.LEVEL_SENSOR : payload.COMMAND.GET_STATUS.LEVEL_SENSOR;
                     long? UptimeSec = IsAck ? payload.ACK.COMMAND.GET_STATUS.UPTIME_SEC : payload.COMMAND.GET_STATUS.UPTIME_SEC;
-                    string Timestamp = IsAck ? payload.ACK.COMMAND.GET_STATUS.TIMESTAMP : payload.COMMAND.GET_STATUS.TIMESTAMP;
+                    string Timestamp = IsAck ? payload.ACK.COMMAND.TIMESTAMP : payload.COMMAND.TIMESTAMP;
                     Nullable<DateTime> TimestampDateTime = null;
 
                     if (Timestamp != null)
@@ -917,7 +917,7 @@ namespace MQTTnet.GetLockApp.WinForm
                     string BillMachineType = IsAck ? payload.ACK.COMMAND.GET_INFO.BILL_MACHINE.TYPE : payload.COMMAND.GET_INFO.BILL_MACHINE.TYPE;
                     string BillMachineSN = IsAck ? payload.ACK.COMMAND.GET_INFO.BILL_MACHINE.SN : payload.COMMAND.GET_INFO.BILL_MACHINE.SN;
 
-                    string Timestamp = IsAck ? payload.ACK.COMMAND.GET_INFO.TIMESTAMP : payload.COMMAND.GET_INFO.TIMESTAMP;
+                    string Timestamp = IsAck ? payload.ACK.COMMAND.TIMESTAMP : payload.COMMAND.TIMESTAMP;
                     Nullable<DateTime> TimestampDateTime = null;
 
                     if (Timestamp != null)
