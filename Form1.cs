@@ -388,6 +388,7 @@ namespace MQTTnet.GetLockApp.WinForm
             {
                 dynamic payload = JsonConvert.DeserializeObject(x.ApplicationMessage.ConvertPayloadToString().Replace("\"$", "\"R")
                     .Replace("GET-STATUS", "GET_STATUS")
+                    .Replace("DEVICE-SENSORS", "DEVICE_SENSORS")
                     .Replace("DEVICE-STATUS", "DEVICE_STATUS")
                     .Replace("BILLMACHINE-STATUS", "BILLMACHINE_STATUS")
                     .Replace("BILLMACHINE-ERROR", "BILLMACHINE_ERROR")
@@ -563,9 +564,13 @@ namespace MQTTnet.GetLockApp.WinForm
                     string TopicDeviceId = idCofre;
                     long? Destiny = IsAck ? payload.ACK.COMMAND.DESTINY : payload.COMMAND.DESTINY;
 
+                    long? DeviceSensors = IsAck ? payload.ACK.COMMAND.GET_STATUS.DEVICE_SENSORS : payload.COMMAND.GET_STATUS.DEVICE_SENSORS;
                     long? DeviceStatus = IsAck ? payload.ACK.COMMAND.GET_STATUS.DEVICE_STATUS : payload.COMMAND.GET_STATUS.DEVICE_STATUS;
 
-                    long DeviceStatusValue = DeviceStatus == null ? 0 : (long)DeviceStatus;
+                    if (DeviceStatus == null) DeviceStatus = DeviceSensors;
+                    if (DeviceStatus == null) DeviceStatus = 0;
+
+                        long DeviceStatusValue = DeviceStatus == null ? 0 : (long)DeviceStatus;
                     string DeviceStatusBinaryValue = Convert.ToString(DeviceStatusValue, 2);
 
                     string DeviceStatusBits = DeviceStatusBinaryValue.PadLeft(32, '0');
