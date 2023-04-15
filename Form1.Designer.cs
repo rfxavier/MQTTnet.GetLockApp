@@ -51,12 +51,14 @@
             this.ButtonSubscribe = new System.Windows.Forms.Button();
             this.lblSubscribed = new System.Windows.Forms.Label();
             this.lblFileErr = new System.Windows.Forms.Label();
+            this.lblZabbix = new System.Windows.Forms.Label();
+            this.lblZabbixPing = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(119, 50);
+            this.label1.Location = new System.Drawing.Point(119, 96);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(32, 15);
             this.label1.TabIndex = 0;
@@ -64,7 +66,7 @@
             // 
             // TextBoxPort
             // 
-            this.TextBoxPort.Location = new System.Drawing.Point(172, 47);
+            this.TextBoxPort.Location = new System.Drawing.Point(172, 93);
             this.TextBoxPort.Name = "TextBoxPort";
             this.TextBoxPort.Size = new System.Drawing.Size(100, 23);
             this.TextBoxPort.TabIndex = 1;
@@ -73,7 +75,7 @@
             // 
             // ButtonServerStart
             // 
-            this.ButtonServerStart.Location = new System.Drawing.Point(433, 47);
+            this.ButtonServerStart.Location = new System.Drawing.Point(433, 93);
             this.ButtonServerStart.Name = "ButtonServerStart";
             this.ButtonServerStart.Size = new System.Drawing.Size(75, 23);
             this.ButtonServerStart.TabIndex = 2;
@@ -83,7 +85,7 @@
             // 
             // ButtonServerStop
             // 
-            this.ButtonServerStop.Location = new System.Drawing.Point(514, 47);
+            this.ButtonServerStop.Location = new System.Drawing.Point(514, 93);
             this.ButtonServerStop.Name = "ButtonServerStop";
             this.ButtonServerStop.Size = new System.Drawing.Size(75, 23);
             this.ButtonServerStop.TabIndex = 3;
@@ -94,7 +96,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(33, 51);
+            this.label2.Location = new System.Drawing.Point(33, 97);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(39, 15);
             this.label2.TabIndex = 4;
@@ -111,7 +113,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(33, 79);
+            this.label3.Location = new System.Drawing.Point(33, 125);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(90, 15);
             this.label3.TabIndex = 5;
@@ -119,7 +121,7 @@
             // 
             // TextBoxTopicPublished
             // 
-            this.TextBoxTopicPublished.Location = new System.Drawing.Point(164, 76);
+            this.TextBoxTopicPublished.Location = new System.Drawing.Point(164, 122);
             this.TextBoxTopicPublished.Name = "TextBoxTopicPublished";
             this.TextBoxTopicPublished.Size = new System.Drawing.Size(425, 23);
             this.TextBoxTopicPublished.TabIndex = 1;
@@ -129,7 +131,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(33, 109);
+            this.label4.Location = new System.Drawing.Point(33, 155);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(90, 15);
             this.label4.TabIndex = 5;
@@ -138,7 +140,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(33, 224);
+            this.label5.Location = new System.Drawing.Point(33, 270);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(96, 15);
             this.label5.TabIndex = 5;
@@ -146,7 +148,7 @@
             // 
             // ButtonPublisherStop
             // 
-            this.ButtonPublisherStop.Location = new System.Drawing.Point(514, 105);
+            this.ButtonPublisherStop.Location = new System.Drawing.Point(514, 151);
             this.ButtonPublisherStop.Name = "ButtonPublisherStop";
             this.ButtonPublisherStop.Size = new System.Drawing.Size(75, 23);
             this.ButtonPublisherStop.TabIndex = 3;
@@ -156,7 +158,7 @@
             // 
             // ButtonPublisherStart
             // 
-            this.ButtonPublisherStart.Location = new System.Drawing.Point(433, 105);
+            this.ButtonPublisherStart.Location = new System.Drawing.Point(433, 151);
             this.ButtonPublisherStart.Name = "ButtonPublisherStart";
             this.ButtonPublisherStart.Size = new System.Drawing.Size(75, 23);
             this.ButtonPublisherStart.TabIndex = 2;
@@ -166,7 +168,7 @@
             // 
             // TextBoxPublish
             // 
-            this.TextBoxPublish.Location = new System.Drawing.Point(33, 134);
+            this.TextBoxPublish.Location = new System.Drawing.Point(33, 180);
             this.TextBoxPublish.Name = "TextBoxPublish";
             this.TextBoxPublish.Size = new System.Drawing.Size(394, 23);
             this.TextBoxPublish.TabIndex = 1;
@@ -174,7 +176,7 @@
             // 
             // ButtonPublish
             // 
-            this.ButtonPublish.Location = new System.Drawing.Point(514, 134);
+            this.ButtonPublish.Location = new System.Drawing.Point(514, 180);
             this.ButtonPublish.Name = "ButtonPublish";
             this.ButtonPublish.Size = new System.Drawing.Size(75, 23);
             this.ButtonPublish.TabIndex = 3;
@@ -184,7 +186,7 @@
             // 
             // ButtonSubscriberStop
             // 
-            this.ButtonSubscriberStop.Location = new System.Drawing.Point(514, 220);
+            this.ButtonSubscriberStop.Location = new System.Drawing.Point(514, 266);
             this.ButtonSubscriberStop.Name = "ButtonSubscriberStop";
             this.ButtonSubscriberStop.Size = new System.Drawing.Size(75, 23);
             this.ButtonSubscriberStop.TabIndex = 3;
@@ -194,7 +196,7 @@
             // 
             // ButtonSubscriberStart
             // 
-            this.ButtonSubscriberStart.Location = new System.Drawing.Point(433, 220);
+            this.ButtonSubscriberStart.Location = new System.Drawing.Point(433, 266);
             this.ButtonSubscriberStart.Name = "ButtonSubscriberStart";
             this.ButtonSubscriberStart.Size = new System.Drawing.Size(75, 23);
             this.ButtonSubscriberStart.TabIndex = 2;
@@ -205,15 +207,15 @@
             // TextBoxSubscriber
             // 
             this.TextBoxSubscriber.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.TextBoxSubscriber.Location = new System.Drawing.Point(33, 47);
+            this.TextBoxSubscriber.Location = new System.Drawing.Point(33, 93);
             this.TextBoxSubscriber.Multiline = true;
             this.TextBoxSubscriber.Name = "TextBoxSubscriber";
-            this.TextBoxSubscriber.Size = new System.Drawing.Size(556, 472);
+            this.TextBoxSubscriber.Size = new System.Drawing.Size(556, 426);
             this.TextBoxSubscriber.TabIndex = 6;
             // 
             // ButtonGeneratePublishedMessage
             // 
-            this.ButtonGeneratePublishedMessage.Location = new System.Drawing.Point(433, 133);
+            this.ButtonGeneratePublishedMessage.Location = new System.Drawing.Point(433, 179);
             this.ButtonGeneratePublishedMessage.Name = "ButtonGeneratePublishedMessage";
             this.ButtonGeneratePublishedMessage.Size = new System.Drawing.Size(75, 23);
             this.ButtonGeneratePublishedMessage.TabIndex = 2;
@@ -224,7 +226,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(33, 252);
+            this.label6.Location = new System.Drawing.Point(33, 298);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(96, 15);
             this.label6.TabIndex = 5;
@@ -232,7 +234,7 @@
             // 
             // TextBoxTopicSubscribed
             // 
-            this.TextBoxTopicSubscribed.Location = new System.Drawing.Point(164, 249);
+            this.TextBoxTopicSubscribed.Location = new System.Drawing.Point(164, 295);
             this.TextBoxTopicSubscribed.Name = "TextBoxTopicSubscribed";
             this.TextBoxTopicSubscribed.Size = new System.Drawing.Size(344, 23);
             this.TextBoxTopicSubscribed.TabIndex = 1;
@@ -241,7 +243,7 @@
             // 
             // ButtonSubscribe
             // 
-            this.ButtonSubscribe.Location = new System.Drawing.Point(514, 248);
+            this.ButtonSubscribe.Location = new System.Drawing.Point(514, 294);
             this.ButtonSubscribe.Name = "ButtonSubscribe";
             this.ButtonSubscribe.Size = new System.Drawing.Size(75, 23);
             this.ButtonSubscribe.TabIndex = 3;
@@ -271,11 +273,30 @@
             this.lblFileErr.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.lblFileErr.Visible = false;
             // 
+            // lblZabbix
+            // 
+            this.lblZabbix.AutoSize = true;
+            this.lblZabbix.Location = new System.Drawing.Point(33, 61);
+            this.lblZabbix.Name = "lblZabbix";
+            this.lblZabbix.Size = new System.Drawing.Size(0, 15);
+            this.lblZabbix.TabIndex = 10;
+            // 
+            // lblZabbixPing
+            // 
+            this.lblZabbixPing.AutoSize = true;
+            this.lblZabbixPing.Location = new System.Drawing.Point(33, 34);
+            this.lblZabbixPing.Name = "lblZabbixPing";
+            this.lblZabbixPing.Size = new System.Drawing.Size(70, 15);
+            this.lblZabbixPing.TabIndex = 11;
+            this.lblZabbixPing.Text = "Zabbix ping";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(627, 531);
+            this.Controls.Add(this.lblZabbixPing);
+            this.Controls.Add(this.lblZabbix);
             this.Controls.Add(this.lblFileErr);
             this.Controls.Add(this.lblSubscribed);
             this.Controls.Add(this.TextBoxSubscriber);
@@ -335,6 +356,8 @@
 		private System.Windows.Forms.TextBox TextBoxTopicSubscribed;
         private System.Windows.Forms.Label lblSubscribed;
         private System.Windows.Forms.Label lblFileErr;
+        private System.Windows.Forms.Label lblZabbix;
+        private System.Windows.Forms.Label lblZabbixPing;
     }
 }
 

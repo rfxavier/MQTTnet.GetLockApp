@@ -63,7 +63,9 @@ namespace MQTTnet.GetLockApp.WinForm
 
             var timer = new Timer
             {
-                AutoReset = true, Enabled = true, Interval = 1000
+                AutoReset = true,
+                Enabled = true,
+                Interval = Convert.ToInt32(ConfigurationManager.AppSettings["zabbixTimerInterval"])
             };
 
             timer.Elapsed += this.TimerElapsed;
@@ -1195,6 +1197,26 @@ namespace MQTTnet.GetLockApp.WinForm
             this.BeginInvoke(
                 (MethodInvoker)delegate
                 {
+
+                    if (ConfigurationManager.AppSettings["zabbixTimerOnOff"] == "ON")
+                    {
+                        System.Diagnostics.Process process = new System.Diagnostics.Process();
+                        System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+                        //startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                        startInfo.FileName = $"{ConfigurationManager.AppSettings["zabbixSenderPath"]}zabbix_sender.exe";
+                        startInfo.Arguments = $"-z {ConfigurationManager.AppSettings["zabbixServer"]} -s {ConfigurationManager.AppSettings["zabbixHostTimer"]} -k {ConfigurationManager.AppSettings["zabbixItemTimer"]} -o 1";
+
+                        startInfo.UseShellExecute = false;
+                        startInfo.RedirectStandardOutput = true;
+                        startInfo.CreateNoWindow = true;
+                        process.StartInfo = startInfo;
+                        //lblSubscribed.Text = $"{DateTime.Now:G} {startInfo.FileName} {startInfo.Arguments}";
+
+                        process.Start();
+                        lblZabbixPing.Text = $"{DateTime.Now:G} {startInfo.Arguments}";
+                        lblZabbix.Text = process.StandardOutput.ReadToEnd();
+                    }
+
                     // Server
                     this.TextBoxPort.Enabled = this.mqttServer == null;
                     this.ButtonServerStart.Enabled = this.mqttServer == null;
