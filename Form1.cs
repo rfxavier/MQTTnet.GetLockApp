@@ -401,7 +401,10 @@ namespace MQTTnet.GetLockApp.WinForm
                     .Replace("FIRM-VERSION", "FIRM_VERSION")
                     .Replace("BILL-MACHINE", "BILL_MACHINE")
                     .Replace("GET-USERLIST", "GET_USERLIST")
-                    .Replace("UPDATE-FIRMWARE", "UPDATE_FIRMWARE"));
+                    .Replace("UPDATE-FIRMWARE", "UPDATE_FIRMWARE")
+                    .Replace("USER-ADD", "USER_ADD")
+                    .Replace("USER-EDIT", "USER_EDIT")
+                    .Replace("USER-REMOVE", "USER_REMOVE"));
 
                 if (payload.INFO != null & payload.DATA != null)
                 {
@@ -1123,6 +1126,175 @@ namespace MQTTnet.GetLockApp.WinForm
                     catch (Exception ex)
                     {
                         MessageBox.Show(ex.Message, "Error Occurs", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                else if ((payload.ACK?.COMMAND.USER_ADD != null || (payload.COMMAND?.USER_ADD != null)) ||
+                         (payload.ACK?.COMMAND.USER_EDIT != null || (payload.COMMAND?.USER_EDIT != null)) ||
+                         (payload.ACK?.COMMAND.USER_REMOVE != null || (payload.COMMAND?.USER_REMOVE != null)))
+                {
+                    var IsAck = payload.ACK?.COMMAND != null;
+
+                    string idCofre = "";
+
+                    string[] splicedTopic = x.ApplicationMessage.Topic.Split('/', StringSplitOptions.None);
+
+                    if (splicedTopic.Length > 1)
+                    {
+                        idCofre = splicedTopic[1];
+                    }
+
+                    string TopicDeviceId = idCofre;
+                    long? Destiny = IsAck ? payload.ACK.COMMAND.DESTINY : payload.COMMAND.DESTINY;
+
+                    string Operation = (payload.ACK?.COMMAND.USER_ADD != null || (payload.COMMAND?.USER_ADD != null)) ? "User-Add" : (payload.ACK?.COMMAND.USER_EDIT != null || (payload.COMMAND?.USER_EDIT != null)) ? "User-Edit" : (payload.ACK?.COMMAND.USER_REMOVE != null || (payload.COMMAND?.USER_REMOVE != null)) ? "User-Remove" : "";
+
+                    string UserId = "";
+                    string Resp = "";
+
+                    string Name = "";
+                    string LastName = "";
+                    string Password = "";
+                    bool Enable = false;
+                    string AcessLevel = "";
+
+                    if (Operation == "User-Add")
+                    {
+                        UserId = IsAck ? payload.ACK.COMMAND.USER_ADD.ID : payload.COMMAND.USER_ADD.ID;
+                        Resp = IsAck ? payload.ACK.COMMAND.USER_ADD.RESP : payload.COMMAND.USER_ADD.RESP;
+
+                        Name = IsAck ? payload.ACK.COMMAND.USER_ADD.NAME : payload.COMMAND.USER_ADD.NAME;
+                        LastName = IsAck ? payload.ACK.COMMAND.USER_ADD.LASTNAME : payload.COMMAND.USER_ADD.LASTNAME;
+                        Password = IsAck ? payload.ACK.COMMAND.USER_ADD.PASSWD : payload.COMMAND.USER_ADD.PASSWD;
+                        Enable = IsAck ? Convert.ToBoolean(payload.ACK.COMMAND.USER_ADD.ENABLE) : Convert.ToBoolean(payload.COMMAND.USER_ADD.ENABLE);
+                        AcessLevel = IsAck ? payload.ACK.COMMAND.USER_ADD.ACCESSLEVEL : payload.COMMAND.USER_ADD.ACCESSLEVEL;
+                    }
+                    else if (Operation == "User-Edit")
+                    {
+                        UserId = IsAck ? payload.ACK.COMMAND.USER_EDIT.ID : payload.COMMAND.USER_EDIT.ID;
+                        Resp = IsAck ? payload.ACK.COMMAND.USER_EDIT.RESP : payload.COMMAND.USER_EDIT.RESP;
+
+                        Name = IsAck ? payload.ACK.COMMAND.USER_EDIT.NAME : payload.COMMAND.USER_EDIT.NAME;
+                        LastName = IsAck ? payload.ACK.COMMAND.USER_EDIT.LASTNAME : payload.COMMAND.USER_EDIT.LASTNAME;
+                        Password = IsAck ? payload.ACK.COMMAND.USER_EDIT.PASSWD : payload.COMMAND.USER_EDIT.PASSWD;
+                        Enable = IsAck ? Convert.ToBoolean(payload.ACK.COMMAND.USER_EDIT.ENABLE) : Convert.ToBoolean(payload.COMMAND.USER_EDIT.ENABLE);
+                        AcessLevel = IsAck ? payload.ACK.COMMAND.USER_EDIT.ACCESSLEVEL : payload.COMMAND.USER_EDIT.ACCESSLEVEL;
+                    }
+                    else if (Operation == "User-Remove")
+                    {
+                        UserId = IsAck ? payload.ACK.COMMAND.USER_REMOVE.ID : payload.COMMAND.USER_REMOVE.ID;
+                        Resp = IsAck ? payload.ACK.COMMAND.USER_REMOVE.RESP : payload.COMMAND.USER_REMOVE.RESP;
+                    }
+
+                    string Timestamp = IsAck ? payload.ACK.COMMAND.TIMESTAMP : payload.COMMAND.TIMESTAMP;
+                    Nullable<DateTime> TimestampDateTime = null;
+
+                    if (Timestamp != null)
+                    {
+                        TimestampDateTime = UnixTimeStampToDateTime(Convert.ToInt64(Timestamp));
+                    }
+
+                    SqlConnection conn = new SqlConnection(@$"Server={ConfigurationManager.AppSettings["sqlServer"]};Database={ConfigurationManager.AppSettings["sqlServerDatabase"]};User Id={ConfigurationManager.AppSettings["sqlServerUser"]};Password={ConfigurationManager.AppSettings["sqlServerPassword"]};");
+                    conn.Open();
+
+                    string insert_query = "INSERT INTO message_user_add_edit_remove ( TopicDeviceId, Destiny, Timestamp, IsAck, Operation, UserId, Response, TimestampDatetime ) VALUES( @TopicDeviceId, @Destiny, @Timestamp, @IsAck, @Operation, @UserId, @Response, @TimestampDatetime )";
+                    SqlCommand cmd = new SqlCommand(insert_query, conn);
+
+                    cmd.Parameters.AddWithValue("@TopicDeviceId", TopicDeviceId == null ? DBNull.Value : TopicDeviceId);
+                    cmd.Parameters.AddWithValue("@Destiny", Destiny == null ? DBNull.Value : Destiny);
+                    cmd.Parameters.AddWithValue("@Operation", Operation == null ? DBNull.Value : Operation);
+                    cmd.Parameters.AddWithValue("@UserId", UserId == null ? DBNull.Value : UserId);
+                    cmd.Parameters.AddWithValue("@Response", Resp == null ? DBNull.Value : Resp);
+
+                    cmd.Parameters.AddWithValue("@Timestamp", Timestamp == null ? DBNull.Value : Timestamp);
+                    cmd.Parameters.AddWithValue("@TimestampDateTime", TimestampDateTime == null ? DBNull.Value : TimestampDateTime);
+                    cmd.Parameters.AddWithValue("@IsAck", IsAck);
+
+                    cmd.ExecuteNonQuery();
+
+                    conn.Close();
+
+                    try
+                    {
+                        if (!IsAck)
+                        {
+                            var ackTopic = $"/{idCofre}/COMMAND";
+                            var ackPayload = $@"{{ ""ACK"": {{ ""COMMAND"": {{ ""DESTINY"": {idCofre}, ""CMD"": ""{Operation.ToUpper()}"" }} }} }}";
+                            var message = new MqttApplicationMessageBuilder().WithTopic(ackTopic).WithPayload(ackPayload).WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce).WithRetainFlag(false).Build();
+
+                            if (this.managedMqttClientPublisher != null)
+                            {
+                                Task.Run(async () => await this.managedMqttClientPublisher.PublishAsync(message));
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Error Occurs", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+
+                    try
+                    {
+                        if (Resp == "0")
+                        {
+                            if (Operation == "User-Add")
+                            {
+                                conn.Open();
+
+                                string insert_query_add = "INSERT INTO cofre_user (id_cofre, data_user, nome, sobrenome, passwd, enable, access_level) VALUES(@id_cofre, @data_user, @nome, @sobrenome, @passwd, @enable, @access_level)";
+                                SqlCommand cmd_add = new SqlCommand(insert_query_add, conn);
+
+                                cmd_add.Parameters.AddWithValue("@id_cofre", TopicDeviceId == null ? DBNull.Value : TopicDeviceId);
+                                cmd_add.Parameters.AddWithValue("@data_user", Timestamp == null ? DBNull.Value : UserId);
+                                cmd_add.Parameters.AddWithValue("@nome", Name == null ? DBNull.Value : Name);
+                                cmd_add.Parameters.AddWithValue("@sobrenome", LastName == null ? DBNull.Value : LastName);
+                                cmd_add.Parameters.AddWithValue("@passwd", Password == null ? DBNull.Value : Password);
+                                cmd_add.Parameters.AddWithValue("@enable", Enable == null ? DBNull.Value : Enable);
+                                cmd_add.Parameters.AddWithValue("@access_level", AcessLevel == null ? DBNull.Value : AcessLevel);
+
+                                cmd_add.ExecuteNonQuery();
+
+                                conn.Close();
+                            }
+                            else if (Operation == "User-Edit")
+                            {
+                                conn.Open();
+
+                                string insert_query_add = "UPDATE cofre_user SET nome=@nome, trackLastWriteTime=getdate(), sobrenome=@sobrenome, passwd=@passwd, enable=@enable, access_level=@enable WHERE id_cofre=@id_cofre and data_user=@data_user";
+                                SqlCommand cmd_add = new SqlCommand(insert_query_add, conn);
+
+                                cmd_add.Parameters.AddWithValue("@id_cofre", TopicDeviceId == null ? DBNull.Value : TopicDeviceId);
+                                cmd_add.Parameters.AddWithValue("@data_user", Timestamp == null ? DBNull.Value : UserId);
+
+                                cmd_add.Parameters.AddWithValue("@nome", Name == null ? DBNull.Value : Name);
+                                cmd_add.Parameters.AddWithValue("@sobrenome", LastName == null ? DBNull.Value : LastName);
+                                cmd_add.Parameters.AddWithValue("@passwd", Password == null ? DBNull.Value : Password);
+                                cmd_add.Parameters.AddWithValue("@enable", Enable == null ? DBNull.Value : Enable);
+                                cmd_add.Parameters.AddWithValue("@access_level", AcessLevel == null ? DBNull.Value : AcessLevel);
+
+                                cmd_add.ExecuteNonQuery();
+
+                                conn.Close();
+                            }
+                            else if (Operation == "User-Remove")
+                            {
+                                conn.Open();
+
+                                string insert_query_add = "DELETE FROM cofre_user WHERE id_cofre=@id_cofre and data_user=@data_user";
+                                SqlCommand cmd_add = new SqlCommand(insert_query_add, conn);
+
+                                cmd_add.Parameters.AddWithValue("@id_cofre", TopicDeviceId == null ? DBNull.Value : TopicDeviceId);
+                                cmd_add.Parameters.AddWithValue("@data_user", Timestamp == null ? DBNull.Value : UserId);
+
+                                cmd_add.ExecuteNonQuery();
+
+                                conn.Close();
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+
+                        
                     }
                 }
 
