@@ -1160,7 +1160,8 @@ namespace MQTTnet.GetLockApp.WinForm
                     if (Operation == "User-Add")
                     {
                         UserId = IsAck ? payload.ACK.COMMAND.USER_ADD.ID : payload.COMMAND.USER_ADD.ID;
-                        Resp = IsAck ? payload.ACK.COMMAND.USER_ADD.RESP : payload.COMMAND.USER_ADD.RESP;
+                        Resp = IsAck ? payload.ACK.COMMAND.USER_ADD.RESP : "0";
+
 
                         Name = IsAck ? payload.ACK.COMMAND.USER_ADD.NAME : payload.COMMAND.USER_ADD.NAME;
                         LastName = IsAck ? payload.ACK.COMMAND.USER_ADD.LASTNAME : payload.COMMAND.USER_ADD.LASTNAME;
@@ -1171,7 +1172,7 @@ namespace MQTTnet.GetLockApp.WinForm
                     else if (Operation == "User-Edit")
                     {
                         UserId = IsAck ? payload.ACK.COMMAND.USER_EDIT.ID : payload.COMMAND.USER_EDIT.ID;
-                        Resp = IsAck ? payload.ACK.COMMAND.USER_EDIT.RESP : payload.COMMAND.USER_EDIT.RESP;
+                        Resp = IsAck ? payload.ACK.COMMAND.USER_EDIT.RESP : "0";
 
                         Name = IsAck ? payload.ACK.COMMAND.USER_EDIT.NAME : payload.COMMAND.USER_EDIT.NAME;
                         LastName = IsAck ? payload.ACK.COMMAND.USER_EDIT.LASTNAME : payload.COMMAND.USER_EDIT.LASTNAME;
@@ -1182,7 +1183,7 @@ namespace MQTTnet.GetLockApp.WinForm
                     else if (Operation == "User-Remove")
                     {
                         UserId = IsAck ? payload.ACK.COMMAND.USER_REMOVE.ID : payload.COMMAND.USER_REMOVE.ID;
-                        Resp = IsAck ? payload.ACK.COMMAND.USER_REMOVE.RESP : payload.COMMAND.USER_REMOVE.RESP;
+                        Resp = IsAck ? payload.ACK.COMMAND.USER_REMOVE.RESP : "0";
                     }
 
                     string Timestamp = IsAck ? payload.ACK.COMMAND.TIMESTAMP : payload.COMMAND.TIMESTAMP;
@@ -1203,7 +1204,7 @@ namespace MQTTnet.GetLockApp.WinForm
                     cmd.Parameters.AddWithValue("@Destiny", Destiny == null ? DBNull.Value : Destiny);
                     cmd.Parameters.AddWithValue("@Operation", Operation == null ? DBNull.Value : Operation);
                     cmd.Parameters.AddWithValue("@UserId", UserId == null ? DBNull.Value : UserId);
-                    cmd.Parameters.AddWithValue("@Response", Resp == null ? DBNull.Value : Resp);
+                    cmd.Parameters.AddWithValue("@Response", Resp == null ? 0 : Resp);
 
                     cmd.Parameters.AddWithValue("@Timestamp", Timestamp == null ? DBNull.Value : Timestamp);
                     cmd.Parameters.AddWithValue("@TimestampDateTime", TimestampDateTime == null ? DBNull.Value : TimestampDateTime);
@@ -1244,7 +1245,7 @@ namespace MQTTnet.GetLockApp.WinForm
                                 SqlCommand cmd_add = new SqlCommand(insert_query_add, conn);
 
                                 cmd_add.Parameters.AddWithValue("@id_cofre", TopicDeviceId == null ? DBNull.Value : TopicDeviceId);
-                                cmd_add.Parameters.AddWithValue("@data_user", Timestamp == null ? DBNull.Value : UserId);
+                                cmd_add.Parameters.AddWithValue("@data_user", UserId == null ? DBNull.Value : UserId);
                                 cmd_add.Parameters.AddWithValue("@nome", Name == null ? DBNull.Value : Name);
                                 cmd_add.Parameters.AddWithValue("@sobrenome", LastName == null ? DBNull.Value : LastName);
                                 cmd_add.Parameters.AddWithValue("@passwd", Password == null ? DBNull.Value : Password);
@@ -1263,7 +1264,7 @@ namespace MQTTnet.GetLockApp.WinForm
                                 SqlCommand cmd_add = new SqlCommand(insert_query_add, conn);
 
                                 cmd_add.Parameters.AddWithValue("@id_cofre", TopicDeviceId == null ? DBNull.Value : TopicDeviceId);
-                                cmd_add.Parameters.AddWithValue("@data_user", Timestamp == null ? DBNull.Value : UserId);
+                                cmd_add.Parameters.AddWithValue("@data_user", UserId == null ? DBNull.Value : UserId);
 
                                 cmd_add.Parameters.AddWithValue("@nome", Name == null ? DBNull.Value : Name);
                                 cmd_add.Parameters.AddWithValue("@sobrenome", LastName == null ? DBNull.Value : LastName);
@@ -1283,7 +1284,7 @@ namespace MQTTnet.GetLockApp.WinForm
                                 SqlCommand cmd_add = new SqlCommand(insert_query_add, conn);
 
                                 cmd_add.Parameters.AddWithValue("@id_cofre", TopicDeviceId == null ? DBNull.Value : TopicDeviceId);
-                                cmd_add.Parameters.AddWithValue("@data_user", Timestamp == null ? DBNull.Value : UserId);
+                                cmd_add.Parameters.AddWithValue("@data_user", UserId == null ? DBNull.Value : UserId);
 
                                 cmd_add.ExecuteNonQuery();
 
