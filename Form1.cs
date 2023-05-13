@@ -1259,7 +1259,7 @@ namespace MQTTnet.GetLockApp.WinForm
                             {
                                 conn.Open();
 
-                                string insert_query_add = "UPDATE cofre_user SET nome=@nome, trackLastWriteTime=getdate(), sobrenome=@sobrenome, passwd=@passwd, enable=@enable, access_level=@enable WHERE id_cofre=@id_cofre and data_user=@data_user";
+                                string insert_query_add = "UPDATE cofre_user SET nome=@nome, trackLastWriteTime=getdate(), sobrenome=@sobrenome, passwd=@passwd, enable=@enable, access_level=@access_level WHERE id_cofre=@id_cofre and data_user=@data_user";
                                 SqlCommand cmd_add = new SqlCommand(insert_query_add, conn);
 
                                 cmd_add.Parameters.AddWithValue("@id_cofre", TopicDeviceId == null ? DBNull.Value : TopicDeviceId);
