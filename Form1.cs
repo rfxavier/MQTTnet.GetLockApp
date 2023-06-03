@@ -404,7 +404,9 @@ namespace MQTTnet.GetLockApp.WinForm
                     .Replace("UPDATE-FIRMWARE", "UPDATE_FIRMWARE")
                     .Replace("USER-ADD", "USER_ADD")
                     .Replace("USER-EDIT", "USER_EDIT")
-                    .Replace("USER-REMOVE", "USER_REMOVE"));
+                    .Replace("USER-REMOVE", "USER_REMOVE")
+                    .Replace("LIMIT-DEPOSIT-ENABLE", "LIMIT_DEPOSIT_ENABLE")
+                    .Replace("LIMIT-DEPOSIT-VALUE", "LIMIT_DEPOSIT_VALUE"));
 
                 if (payload.INFO != null & payload.DATA != null)
                 {
@@ -465,6 +467,17 @@ namespace MQTTnet.GetLockApp.WinForm
                         userLastName = payload.USER.LASTNAME;
                     }
 
+                    Nullable<decimal> balance = null;
+                    bool limitDepositEnabled = false;
+                    Nullable<decimal> limitDepositValue = null;
+
+                    if (payload.BALANCE != null)
+                    {
+                        balance = payload.BALANCE.TOTAL;
+                        limitDepositEnabled = payload.BALANCE.LIMIT_DEPOSIT_ENABLE;
+                        limitDepositValue = payload.BALANCE.LIMIT_DEPOSIT_VALUE;
+                    }
+
                     SqlConnection conn = new SqlConnection(@$"Server={ConfigurationManager.AppSettings["sqlServer"]};Database={ConfigurationManager.AppSettings["sqlServerDatabase"]};User Id={ConfigurationManager.AppSettings["sqlServerUser"]};Password={ConfigurationManager.AppSettings["sqlServerPassword"]};");
                     conn.Open();
 
@@ -493,7 +506,7 @@ namespace MQTTnet.GetLockApp.WinForm
                                 reader2.Close();
                             }
 
-                            string insert_query = "INSERT INTO message (id_cofre, info_id, info_ip, info_mac, info_json, data_hash, data_tmst_begin, data_tmst_begin_datetime, data_tmst_end, data_tmst_end_datetime, data_user, data_type, data_currency_total, data_currency_bill_2, data_currency_bill_5, data_currency_bill_10, data_currency_bill_20, data_currency_bill_50, data_currency_bill_100, data_currency_bill_200, data_currency_bill_rejected, data_currency_envelope, data_currency_envelope_total, cod_loja, data_currency_bill, data_currency_bill_total, data_sensor, user_id, user_name, user_lastname) VALUES (@idCofre, @infoId, @infoIp, @infoMac, @infoJson, @dataHash, @dataTmstBegin, @dataTmstBeginDateTime, @dataTmstEnd, @dataTmstEndDateTime, @dataUser, @dataType, @dataCurrencyTotal, @dataCurrencyB2, @dataCurrencyB5, @dataCurrencyB10, @dataCurrencyB20, @dataCurrencyB50, @dataCurrencyB100, @dataCurrencyB200, @dataCurrencyBREJ, @dataCurrencyEnvelope, @dataCurrencyEnvelopeTotal, @codLoja, @dataCurrencyBill, @dataCurrencyBillTotal, @dataSensor, @userId, @userName, @userLastName)";
+                            string insert_query = "INSERT INTO message (id_cofre, info_id, info_ip, info_mac, info_json, data_hash, data_tmst_begin, data_tmst_begin_datetime, data_tmst_end, data_tmst_end_datetime, data_user, data_type, data_currency_total, data_currency_bill_2, data_currency_bill_5, data_currency_bill_10, data_currency_bill_20, data_currency_bill_50, data_currency_bill_100, data_currency_bill_200, data_currency_bill_rejected, data_currency_envelope, data_currency_envelope_total, cod_loja, data_currency_bill, data_currency_bill_total, data_sensor, user_id, user_name, user_lastname, balance, limit_deposit_enabled, limit_deposit_value) VALUES (@idCofre, @infoId, @infoIp, @infoMac, @infoJson, @dataHash, @dataTmstBegin, @dataTmstBeginDateTime, @dataTmstEnd, @dataTmstEndDateTime, @dataUser, @dataType, @dataCurrencyTotal, @dataCurrencyB2, @dataCurrencyB5, @dataCurrencyB10, @dataCurrencyB20, @dataCurrencyB50, @dataCurrencyB100, @dataCurrencyB200, @dataCurrencyBREJ, @dataCurrencyEnvelope, @dataCurrencyEnvelopeTotal, @codLoja, @dataCurrencyBill, @dataCurrencyBillTotal, @dataSensor, @userId, @userName, @userLastName, @balance, @limitDepositEnabled, @limitDepositValue)";
                             SqlCommand cmd = new SqlCommand(insert_query, conn);
 
                             cmd.Parameters.AddWithValue("@idCofre", idCofre == null ? DBNull.Value : idCofre);
@@ -530,6 +543,10 @@ namespace MQTTnet.GetLockApp.WinForm
                             cmd.Parameters.AddWithValue("@userId", userId == null ? DBNull.Value : userId);
                             cmd.Parameters.AddWithValue("@UserName", userName == null ? DBNull.Value : userName);
                             cmd.Parameters.AddWithValue("@userLastName", userLastName == null ? DBNull.Value : userLastName);
+
+                            cmd.Parameters.AddWithValue("@balance", balance == null ? DBNull.Value : balance);
+                            cmd.Parameters.AddWithValue("@limitDepositEnabled", limitDepositEnabled);
+                            cmd.Parameters.AddWithValue("@limitDepositValue", limitDepositValue == null ? DBNull.Value : limitDepositValue);
 
                             cmd.ExecuteNonQuery();
                         }
