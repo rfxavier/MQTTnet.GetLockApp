@@ -386,6 +386,8 @@ namespace MQTTnet.GetLockApp.WinForm
 
             var topicPrefix = x.ApplicationMessage.Topic.Split("/")[0];
 
+            var topicFilename = x.ApplicationMessage.Topic.ToString().Replace("/", "_").ToLower();
+
             if (topicPrefix == "" && x.ApplicationMessage.Topic.Substring(Math.Max(0, x.ApplicationMessage.Topic.Length - 8)).ToUpper() == "/MESSAGE")
             {
                 dynamic payload = JsonConvert.DeserializeObject(x.ApplicationMessage.ConvertPayloadToString().Replace("\"$", "\"R")
@@ -407,6 +409,30 @@ namespace MQTTnet.GetLockApp.WinForm
                     .Replace("USER-REMOVE", "USER_REMOVE")
                     .Replace("LIMIT-DEPOSIT-ENABLE", "LIMIT_DEPOSIT_ENABLE")
                     .Replace("LIMIT-DEPOSIT-VALUE", "LIMIT_DEPOSIT_VALUE"));
+
+                var fileNameMessage = $"{topicFilename}_{dateTimeNow.Replace("-", "").Replace(":", "").Replace(".", "")}_subscribe.txt";
+
+                var yearMessage = now.Year.ToString("0000");
+                var monthMessage = now.Month.ToString("00");
+                var dayMessage = now.Day.ToString("00");
+                var hourMessage = now.Hour.ToString("00");
+
+                var fullPathMessage = Path.Combine("..", topicPrefix, "fileHandling", "incoming", $"{yearMessage}", $"{monthMessage}", $"{dayMessage}", $"{hourMessage}");
+                var fullFileNameMessage = Path.Combine("..", topicPrefix, "fileHandling", "incoming", $"{yearMessage}", $"{monthMessage}", $"{dayMessage}", $"{hourMessage}", fileNameMessage);
+
+                try
+                {
+                    var content = "Message;Topic" + Environment.NewLine + x.ApplicationMessage.ConvertPayloadToString() + ";" + x.ApplicationMessage.Topic;
+                    DirectoryInfo di = Directory.CreateDirectory(fullPathMessage);
+                    File.WriteAllText(fullFileNameMessage, content);
+                    //lblFileErr.Visible = false;
+                }
+                catch (Exception ex)
+                {
+                    this.BeginInvoke((MethodInvoker)delegate { this.lblFileErr.Visible = true; this.lblFileErr.Text = $"Error writing file: {@fullFileNameMessage}"; });
+                }
+
+                this.BeginInvoke((MethodInvoker)delegate { this.TextBoxSubscriber.Text = item; });
 
                 if (payload.INFO != null & payload.DATA != null)
                 {
@@ -563,6 +589,30 @@ namespace MQTTnet.GetLockApp.WinForm
                         if (this.managedMqttClientPublisher != null)
                         {
                             Task.Run(async () => await this.managedMqttClientPublisher.PublishAsync(message));
+
+                            var fileNamePub = $"{ackTopic.Replace("/","_").ToLower()}_{dateTimeNow.Replace("-", "").Replace(":", "").Replace(".", "")}_publish_command_ack.txt";
+
+                            var yearPub = now.Year.ToString("0000");
+                            var monthPub = now.Month.ToString("00");
+                            var dayPub = now.Day.ToString("00");
+                            var hourPub = now.Hour.ToString("00");
+
+                            var fullPathPub = Path.Combine("..", topicPrefix, "fileHandling", "incoming", $"{yearPub}", $"{monthPub}", $"{dayPub}", $"{hourPub}");
+                            var fullFileNamePub = Path.Combine("..", topicPrefix, "fileHandling", "incoming", $"{yearPub}", $"{monthPub}", $"{dayPub}", $"{hourPub}", fileNamePub);
+
+                            try
+                            {
+                                var content = "Message;Topic" + Environment.NewLine + ackPayload + ";" + ackTopic;
+                                DirectoryInfo di = Directory.CreateDirectory(fullPathPub);
+                                File.WriteAllText(fullFileNamePub, content);
+                                //lblFileErr.Visible = false;
+                            }
+                            catch (Exception ex)
+                            {
+                                this.BeginInvoke((MethodInvoker)delegate { this.lblFileErr.Visible = true; this.lblFileErr.Text = $"Error writing file: {fullFileNamePub}"; });
+                            }
+
+                            this.BeginInvoke((MethodInvoker)delegate { this.TextBoxSubscriber.Text = item; });
                         }
                     }
                     catch (Exception ex)
@@ -1315,11 +1365,36 @@ namespace MQTTnet.GetLockApp.WinForm
                         
                     }
                 }
+                else
+                {
+                    var fileName = $"{topicFilename}_{dateTimeNow.Replace("-", "").Replace(":", "").Replace(".", "")}_subscribe.txt";
 
+                    var year = now.Year.ToString("0000");
+                    var month = now.Month.ToString("00");
+                    var day = now.Day.ToString("00");
+                    var hour = now.Hour.ToString("00");
+
+                    var fullPath = Path.Combine("..", topicPrefix, "fileHandling", "incoming", $"{year}", $"{month}", $"{day}", $"{hour}");
+                    var fullFileName = Path.Combine("..", topicPrefix, "fileHandling", "incoming", $"{year}", $"{month}", $"{day}", $"{hour}", fileName);
+
+                    try
+                    {
+                        var content = "Message;Topic" + Environment.NewLine + x.ApplicationMessage.ConvertPayloadToString() + ";" + x.ApplicationMessage.Topic;
+                        DirectoryInfo di = Directory.CreateDirectory(fullPath);
+                        File.WriteAllText(fullFileName, content);
+                        //lblFileErr.Visible = false;
+                    }
+                    catch (Exception ex)
+                    {
+                        this.BeginInvoke((MethodInvoker)delegate { this.lblFileErr.Visible = true; this.lblFileErr.Text = $"Error writing file: {@fullFileName}"; });
+                    }
+
+                    this.BeginInvoke((MethodInvoker)delegate { this.TextBoxSubscriber.Text = item; });
+                }
             }
             else 
             {
-                var fileName = topicPrefix + "_" + dateTimeNow.Replace("-", "").Replace(":", "").Replace(".", "") + ".txt";
+                var fileName = $"{topicFilename}_{dateTimeNow.Replace("-", "").Replace(":", "").Replace(".", "")}_subscribe.txt";
 
                 var year = now.Year.ToString("0000");
                 var month = now.Month.ToString("00");
