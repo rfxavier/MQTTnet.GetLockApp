@@ -410,32 +410,33 @@ namespace MQTTnet.GetLockApp.WinForm
                     .Replace("LIMIT-DEPOSIT-ENABLE", "LIMIT_DEPOSIT_ENABLE")
                     .Replace("LIMIT-DEPOSIT-VALUE", "LIMIT_DEPOSIT_VALUE"));
 
-                var fileNameMessage = $"{topicFilename}_{dateTimeNow.Replace("-", "").Replace(":", "").Replace(".", "")}_subscribe.txt";
-
-                var yearMessage = now.Year.ToString("0000");
-                var monthMessage = now.Month.ToString("00");
-                var dayMessage = now.Day.ToString("00");
-                var hourMessage = now.Hour.ToString("00");
-
-                var fullPathMessage = Path.Combine("..", topicPrefix, "fileHandling", "incoming", $"{yearMessage}", $"{monthMessage}", $"{dayMessage}", $"{hourMessage}");
-                var fullFileNameMessage = Path.Combine("..", topicPrefix, "fileHandling", "incoming", $"{yearMessage}", $"{monthMessage}", $"{dayMessage}", $"{hourMessage}", fileNameMessage);
-
-                try
-                {
-                    var content = "Message;Topic" + Environment.NewLine + x.ApplicationMessage.ConvertPayloadToString() + ";" + x.ApplicationMessage.Topic;
-                    DirectoryInfo di = Directory.CreateDirectory(fullPathMessage);
-                    File.WriteAllText(fullFileNameMessage, content);
-                    //lblFileErr.Visible = false;
-                }
-                catch (Exception ex)
-                {
-                    this.BeginInvoke((MethodInvoker)delegate { this.lblFileErr.Visible = true; this.lblFileErr.Text = $"Error writing file: {@fullFileNameMessage}"; });
-                }
-
-                this.BeginInvoke((MethodInvoker)delegate { this.TextBoxSubscriber.Text = item; });
-
                 if (payload.INFO != null & payload.DATA != null)
                 {
+                    //var fileNameMessage = $"{topicFilename}_{dateTimeNow.Replace("-", "").Replace(":", "").Replace(".", "")}_subscribe_info_data.txt";
+
+                    //var yearMessage = now.Year.ToString("0000");
+                    //var monthMessage = now.Month.ToString("00");
+                    //var dayMessage = now.Day.ToString("00");
+                    //var hourMessage = now.Hour.ToString("00");
+
+                    //var fullPathMessage = Path.Combine("..", topicPrefix, "fileHandling", "incoming", $"{yearMessage}", $"{monthMessage}", $"{dayMessage}", $"{hourMessage}");
+                    //var fullFileNameMessage = Path.Combine("..", topicPrefix, "fileHandling", "incoming", $"{yearMessage}", $"{monthMessage}", $"{dayMessage}", $"{hourMessage}", fileNameMessage);
+
+                    //try
+                    //{
+                    //    var content = "Message;Topic" + Environment.NewLine + x.ApplicationMessage.ConvertPayloadToString() + ";" + x.ApplicationMessage.Topic;
+                    //    DirectoryInfo di = Directory.CreateDirectory(fullPathMessage);
+                    //    File.WriteAllText(fullFileNameMessage, content);
+                    //    //lblFileErr.Visible = false;
+                    //}
+                    //catch (Exception ex)
+                    //{
+                    //    this.BeginInvoke((MethodInvoker)delegate { this.lblFileErr.Visible = true; this.lblFileErr.Text = $"Error writing file: {@fullFileNameMessage}"; });
+                    //}
+
+                    //this.BeginInvoke((MethodInvoker)delegate { this.TextBoxSubscriber.Text = item; });
+                    LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + x.ApplicationMessage.ConvertPayloadToString() + ";" + x.ApplicationMessage.Topic, "subscribe_info_data");
+
                     string idCofre = "";
 
                     string[] splicedTopic = x.ApplicationMessage.Topic.Split('/', StringSplitOptions.None);
@@ -575,7 +576,7 @@ namespace MQTTnet.GetLockApp.WinForm
                             cmd.Parameters.AddWithValue("@balance", balance == null ? DBNull.Value : balance);
                             cmd.Parameters.AddWithValue("@limitDepositEnabled", limitDepositEnabled);
                             cmd.Parameters.AddWithValue("@limitDepositValue", limitDepositValue == null ? DBNull.Value : limitDepositValue);
-                            cmd.Parameters.AddWithValue("@balanceId", userId == null ? DBNull.Value : balanceId);
+                            cmd.Parameters.AddWithValue("@balanceId", balanceId == null ? DBNull.Value : balanceId);
 
                             cmd.ExecuteNonQuery();
                         }
@@ -593,29 +594,31 @@ namespace MQTTnet.GetLockApp.WinForm
                         {
                             Task.Run(async () => await this.managedMqttClientPublisher.PublishAsync(message));
 
-                            var fileNamePub = $"{ackTopic.Replace("/","_").ToLower()}_{dateTimeNow.Replace("-", "").Replace(":", "").Replace(".", "")}_publish_command_ack.txt";
+                            //var fileNamePub = $"{ackTopic.Replace("/","_").ToLower()}_{dateTimeNow.Replace("-", "").Replace(":", "").Replace(".", "")}_publish_command_info_data_ack.txt";
 
-                            var yearPub = now.Year.ToString("0000");
-                            var monthPub = now.Month.ToString("00");
-                            var dayPub = now.Day.ToString("00");
-                            var hourPub = now.Hour.ToString("00");
+                            //var yearPub = now.Year.ToString("0000");
+                            //var monthPub = now.Month.ToString("00");
+                            //var dayPub = now.Day.ToString("00");
+                            //var hourPub = now.Hour.ToString("00");
 
-                            var fullPathPub = Path.Combine("..", topicPrefix, "fileHandling", "incoming", $"{yearPub}", $"{monthPub}", $"{dayPub}", $"{hourPub}");
-                            var fullFileNamePub = Path.Combine("..", topicPrefix, "fileHandling", "incoming", $"{yearPub}", $"{monthPub}", $"{dayPub}", $"{hourPub}", fileNamePub);
+                            //var fullPathPub = Path.Combine("..", topicPrefix, "fileHandling", "incoming", $"{yearPub}", $"{monthPub}", $"{dayPub}", $"{hourPub}");
+                            //var fullFileNamePub = Path.Combine("..", topicPrefix, "fileHandling", "incoming", $"{yearPub}", $"{monthPub}", $"{dayPub}", $"{hourPub}", fileNamePub);
 
-                            try
-                            {
-                                var content = "Message;Topic" + Environment.NewLine + ackPayload + ";" + ackTopic;
-                                DirectoryInfo di = Directory.CreateDirectory(fullPathPub);
-                                File.WriteAllText(fullFileNamePub, content);
-                                //lblFileErr.Visible = false;
-                            }
-                            catch (Exception ex)
-                            {
-                                this.BeginInvoke((MethodInvoker)delegate { this.lblFileErr.Visible = true; this.lblFileErr.Text = $"Error writing file: {fullFileNamePub}"; });
-                            }
+                            //try
+                            //{
+                            //    var content = "Message;Topic" + Environment.NewLine + ackPayload + ";" + ackTopic;
+                            //    DirectoryInfo di = Directory.CreateDirectory(fullPathPub);
+                            //    File.WriteAllText(fullFileNamePub, content);
+                            //    //lblFileErr.Visible = false;
+                            //}
+                            //catch (Exception ex)
+                            //{
+                            //    this.BeginInvoke((MethodInvoker)delegate { this.lblFileErr.Visible = true; this.lblFileErr.Text = $"Error writing file: {fullFileNamePub}"; });
+                            //}
 
-                            this.BeginInvoke((MethodInvoker)delegate { this.TextBoxSubscriber.Text = item; });
+                            //this.BeginInvoke((MethodInvoker)delegate { this.TextBoxSubscriber.Text = item; });
+
+                            LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + ackPayload + ";" + ackTopic, "publish_command_info_data_ack");
                         }
                     }
                     catch (Exception ex)
@@ -625,6 +628,8 @@ namespace MQTTnet.GetLockApp.WinForm
                 }
                 else if ((payload.ACK?.COMMAND.GET_STATUS != null) || (payload.COMMAND?.GET_STATUS != null))
                 {
+                    LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + x.ApplicationMessage.ConvertPayloadToString() + ";" + x.ApplicationMessage.Topic, "subscribe_get_status");
+
                     var IsAck = payload.ACK?.COMMAND != null;
 
                     string idCofre = "";
@@ -900,6 +905,8 @@ namespace MQTTnet.GetLockApp.WinForm
                             if (this.managedMqttClientPublisher != null)
                             {
                                 Task.Run(async () => await this.managedMqttClientPublisher.PublishAsync(message));
+
+                                LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + ackPayload + ";" + ackTopic, "publish_command_get_status_ack");
                             }
                         }
                     }
@@ -911,6 +918,8 @@ namespace MQTTnet.GetLockApp.WinForm
                 }
                 else if ((payload.ACK?.COMMAND["DEV_LOCK"] != null || (payload.COMMAND?["DEV_LOCK"] != null)))
                 {
+                    LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + x.ApplicationMessage.ConvertPayloadToString() + ";" + x.ApplicationMessage.Topic, "subscribe_dev_lock");
+
                     var IsAck = payload.ACK?.COMMAND != null;
 
                     string idCofre = "";
@@ -965,6 +974,8 @@ namespace MQTTnet.GetLockApp.WinForm
                             if (this.managedMqttClientPublisher != null)
                             {
                                 Task.Run(async () => await this.managedMqttClientPublisher.PublishAsync(message));
+
+                                LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + ackPayload + ";" + ackTopic, "publish_command_dev_lock_ack");
                             }
                         }
                     }
@@ -975,6 +986,8 @@ namespace MQTTnet.GetLockApp.WinForm
                 }
                 else if ((payload.ACK?.COMMAND.GET_INFO != null) || (payload.COMMAND?.GET_INFO != null))
                 {
+                    LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + x.ApplicationMessage.ConvertPayloadToString() + ";" + x.ApplicationMessage.Topic, "subscribe_get_info");
+
                     var IsAck = payload.ACK?.COMMAND != null;
 
                     string idCofre = "";
@@ -1042,6 +1055,8 @@ namespace MQTTnet.GetLockApp.WinForm
                             if (this.managedMqttClientPublisher != null)
                             {
                                 Task.Run(async () => await this.managedMqttClientPublisher.PublishAsync(message));
+
+                                LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + ackPayload + ";" + ackTopic, "publish_command_get_info_ack");
                             }
                         }
                     }
@@ -1053,6 +1068,8 @@ namespace MQTTnet.GetLockApp.WinForm
                 }
                 else if ((payload.ACK?.COMMAND.GET_USERLIST != null) || (payload.COMMAND?.GET_USERLIST != null))
                 {
+                    LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + x.ApplicationMessage.ConvertPayloadToString() + ";" + x.ApplicationMessage.Topic, "subscribe_get_userlist");
+
                     var IsAck = payload.ACK?.COMMAND != null;
 
                     string idCofre = "";
@@ -1127,6 +1144,8 @@ namespace MQTTnet.GetLockApp.WinForm
                             if (this.managedMqttClientPublisher != null)
                             {
                                 Task.Run(async () => await this.managedMqttClientPublisher.PublishAsync(message));
+
+                                LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + ackPayload + ";" + ackTopic, "publish_command_get_userlist_ack");
                             }
                         }
                     }
@@ -1138,6 +1157,8 @@ namespace MQTTnet.GetLockApp.WinForm
                 }
                 else if ((payload.ACK?.COMMAND.UPDATE_FIRMWARE != null || (payload.COMMAND?.UPDATE_FIRMWARE != null)))
                 {
+                    LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + x.ApplicationMessage.ConvertPayloadToString() + ";" + x.ApplicationMessage.Topic, "subscribe_update_firmware");
+
                     var IsAck = payload.ACK?.COMMAND != null;
 
                     string idCofre = "";
@@ -1190,6 +1211,8 @@ namespace MQTTnet.GetLockApp.WinForm
                             if (this.managedMqttClientPublisher != null)
                             {
                                 Task.Run(async () => await this.managedMqttClientPublisher.PublishAsync(message));
+
+                                LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + ackPayload + ";" + ackTopic, "publish_command_update_firmware_ack");
                             }
                         }
                     }
@@ -1202,6 +1225,8 @@ namespace MQTTnet.GetLockApp.WinForm
                          (payload.ACK?.COMMAND.USER_EDIT != null || (payload.COMMAND?.USER_EDIT != null)) ||
                          (payload.ACK?.COMMAND.USER_REMOVE != null || (payload.COMMAND?.USER_REMOVE != null)))
                 {
+                    LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + x.ApplicationMessage.ConvertPayloadToString() + ";" + x.ApplicationMessage.Topic, "subscribe_user_add_edit_remove");
+
                     var IsAck = payload.ACK?.COMMAND != null;
 
                     string idCofre = "";
@@ -1295,6 +1320,8 @@ namespace MQTTnet.GetLockApp.WinForm
                             if (this.managedMqttClientPublisher != null)
                             {
                                 Task.Run(async () => await this.managedMqttClientPublisher.PublishAsync(message));
+
+                                LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + ackPayload + ";" + ackTopic, "publish_command_user_add_edit_remove_ack");
                             }
                         }
                     }
@@ -1506,6 +1533,37 @@ namespace MQTTnet.GetLockApp.WinForm
             ButtonSubscribeClick(sender, e);
 
             ButtonPublisherStartClick(sender, e);
+        }
+
+        private void LogMessage(MqttApplicationMessageReceivedEventArgs x, string item, string topicPrefix, string topicFilename, string content, string description)
+        {
+            var now = DateTime.Now;
+
+            var dateTimeNow = $"{now:O}";
+
+            var fileNameMessage = $"{topicFilename}_{dateTimeNow.Replace("-", "").Replace(":", "").Replace(".", "")}_{description}.txt";
+
+            var yearMessage = now.Year.ToString("0000");
+            var monthMessage = now.Month.ToString("00");
+            var dayMessage = now.Day.ToString("00");
+            var hourMessage = now.Hour.ToString("00");
+
+            var fullPathMessage = Path.Combine("..", topicPrefix, "fileHandling", "incoming", $"{yearMessage}", $"{monthMessage}", $"{dayMessage}", $"{hourMessage}");
+            var fullFileNameMessage = Path.Combine("..", topicPrefix, "fileHandling", "incoming", $"{yearMessage}", $"{monthMessage}", $"{dayMessage}", $"{hourMessage}", fileNameMessage);
+
+            try
+            {
+                //var content = "Message;Topic" + Environment.NewLine + x.ApplicationMessage.ConvertPayloadToString() + ";" + x.ApplicationMessage.Topic;
+                DirectoryInfo di = Directory.CreateDirectory(fullPathMessage);
+                File.WriteAllText(fullFileNameMessage, content);
+                //lblFileErr.Visible = false;
+            }
+            catch (Exception ex)
+            {
+                this.BeginInvoke((MethodInvoker)delegate { this.lblFileErr.Visible = true; this.lblFileErr.Text = $"Error writing file: {@fullFileNameMessage}"; });
+            }
+
+            this.BeginInvoke((MethodInvoker)delegate { this.TextBoxSubscriber.Text = item; });
         }
 
     }
