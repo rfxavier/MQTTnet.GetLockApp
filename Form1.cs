@@ -435,7 +435,7 @@ namespace MQTTnet.GetLockApp.WinForm
                     //}
 
                     //this.BeginInvoke((MethodInvoker)delegate { this.TextBoxSubscriber.Text = item; });
-                    LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + x.ApplicationMessage.ConvertPayloadToString() + ";" + x.ApplicationMessage.Topic, "subscribe_info_data");
+                    // LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + x.ApplicationMessage.ConvertPayloadToString() + ";" + x.ApplicationMessage.Topic, "subscribe_info_data");
 
                     string idCofre = "";
 
@@ -618,7 +618,7 @@ namespace MQTTnet.GetLockApp.WinForm
 
                             //this.BeginInvoke((MethodInvoker)delegate { this.TextBoxSubscriber.Text = item; });
 
-                            LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + ackPayload + ";" + ackTopic, "publish_command_info_data_ack");
+                            // LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + ackPayload + ";" + ackTopic, "publish_command_info_data_ack");
                         }
                     }
                     catch (Exception ex)
@@ -628,7 +628,7 @@ namespace MQTTnet.GetLockApp.WinForm
                 }
                 else if ((payload.ACK?.COMMAND.GET_STATUS != null) || (payload.COMMAND?.GET_STATUS != null))
                 {
-                    LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + x.ApplicationMessage.ConvertPayloadToString() + ";" + x.ApplicationMessage.Topic, "subscribe_get_status");
+                    // LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + x.ApplicationMessage.ConvertPayloadToString() + ";" + x.ApplicationMessage.Topic, "subscribe_get_status");
 
                     var IsAck = payload.ACK?.COMMAND != null;
 
@@ -906,7 +906,7 @@ namespace MQTTnet.GetLockApp.WinForm
                             {
                                 Task.Run(async () => await this.managedMqttClientPublisher.PublishAsync(message));
 
-                                LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + ackPayload + ";" + ackTopic, "publish_command_get_status_ack");
+                                // LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + ackPayload + ";" + ackTopic, "publish_command_get_status_ack");
                             }
                         }
                     }
@@ -918,7 +918,7 @@ namespace MQTTnet.GetLockApp.WinForm
                 }
                 else if ((payload.ACK?.COMMAND["DEV_LOCK"] != null || (payload.COMMAND?["DEV_LOCK"] != null)))
                 {
-                    LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + x.ApplicationMessage.ConvertPayloadToString() + ";" + x.ApplicationMessage.Topic, "subscribe_dev_lock");
+                    // LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + x.ApplicationMessage.ConvertPayloadToString() + ";" + x.ApplicationMessage.Topic, "subscribe_dev_lock");
 
                     var IsAck = payload.ACK?.COMMAND != null;
 
@@ -975,7 +975,7 @@ namespace MQTTnet.GetLockApp.WinForm
                             {
                                 Task.Run(async () => await this.managedMqttClientPublisher.PublishAsync(message));
 
-                                LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + ackPayload + ";" + ackTopic, "publish_command_dev_lock_ack");
+                                // LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + ackPayload + ";" + ackTopic, "publish_command_dev_lock_ack");
                             }
                         }
                     }
@@ -986,7 +986,7 @@ namespace MQTTnet.GetLockApp.WinForm
                 }
                 else if ((payload.ACK?.COMMAND.GET_INFO != null) || (payload.COMMAND?.GET_INFO != null))
                 {
-                    LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + x.ApplicationMessage.ConvertPayloadToString() + ";" + x.ApplicationMessage.Topic, "subscribe_get_info");
+                    // LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + x.ApplicationMessage.ConvertPayloadToString() + ";" + x.ApplicationMessage.Topic, "subscribe_get_info");
 
                     var IsAck = payload.ACK?.COMMAND != null;
 
@@ -1056,7 +1056,7 @@ namespace MQTTnet.GetLockApp.WinForm
                             {
                                 Task.Run(async () => await this.managedMqttClientPublisher.PublishAsync(message));
 
-                                LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + ackPayload + ";" + ackTopic, "publish_command_get_info_ack");
+                                // LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + ackPayload + ";" + ackTopic, "publish_command_get_info_ack");
                             }
                         }
                     }
@@ -1068,7 +1068,7 @@ namespace MQTTnet.GetLockApp.WinForm
                 }
                 else if ((payload.ACK?.COMMAND.GET_USERLIST != null) || (payload.COMMAND?.GET_USERLIST != null))
                 {
-                    LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + x.ApplicationMessage.ConvertPayloadToString() + ";" + x.ApplicationMessage.Topic, "subscribe_get_userlist");
+                    // LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + x.ApplicationMessage.ConvertPayloadToString() + ";" + x.ApplicationMessage.Topic, "subscribe_get_userlist");
 
                     var IsAck = payload.ACK?.COMMAND != null;
 
@@ -1145,7 +1145,7 @@ namespace MQTTnet.GetLockApp.WinForm
                             {
                                 Task.Run(async () => await this.managedMqttClientPublisher.PublishAsync(message));
 
-                                LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + ackPayload + ";" + ackTopic, "publish_command_get_userlist_ack");
+                                // LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + ackPayload + ";" + ackTopic, "publish_command_get_userlist_ack");
                             }
                         }
                     }
@@ -1157,7 +1157,7 @@ namespace MQTTnet.GetLockApp.WinForm
                 }
                 else if ((payload.ACK?.COMMAND.UPDATE_FIRMWARE != null || (payload.COMMAND?.UPDATE_FIRMWARE != null)))
                 {
-                    LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + x.ApplicationMessage.ConvertPayloadToString() + ";" + x.ApplicationMessage.Topic, "subscribe_update_firmware");
+                    // LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + x.ApplicationMessage.ConvertPayloadToString() + ";" + x.ApplicationMessage.Topic, "subscribe_update_firmware");
 
                     var IsAck = payload.ACK?.COMMAND != null;
 
@@ -1212,7 +1212,7 @@ namespace MQTTnet.GetLockApp.WinForm
                             {
                                 Task.Run(async () => await this.managedMqttClientPublisher.PublishAsync(message));
 
-                                LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + ackPayload + ";" + ackTopic, "publish_command_update_firmware_ack");
+                                // LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + ackPayload + ";" + ackTopic, "publish_command_update_firmware_ack");
                             }
                         }
                     }
@@ -1225,7 +1225,7 @@ namespace MQTTnet.GetLockApp.WinForm
                          (payload.ACK?.COMMAND.USER_EDIT != null || (payload.COMMAND?.USER_EDIT != null)) ||
                          (payload.ACK?.COMMAND.USER_REMOVE != null || (payload.COMMAND?.USER_REMOVE != null)))
                 {
-                    LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + x.ApplicationMessage.ConvertPayloadToString() + ";" + x.ApplicationMessage.Topic, "subscribe_user_add_edit_remove");
+                    // LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + x.ApplicationMessage.ConvertPayloadToString() + ";" + x.ApplicationMessage.Topic, "subscribe_user_add_edit_remove");
 
                     var IsAck = payload.ACK?.COMMAND != null;
 
@@ -1321,7 +1321,7 @@ namespace MQTTnet.GetLockApp.WinForm
                             {
                                 Task.Run(async () => await this.managedMqttClientPublisher.PublishAsync(message));
 
-                                LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + ackPayload + ";" + ackTopic, "publish_command_user_add_edit_remove_ack");
+                                // LogMessage(x, item, topicPrefix, topicFilename, "Message;Topic" + Environment.NewLine + ackPayload + ";" + ackTopic, "publish_command_user_add_edit_remove_ack");
                             }
                         }
                     }
@@ -1419,7 +1419,7 @@ namespace MQTTnet.GetLockApp.WinForm
                         this.BeginInvoke((MethodInvoker)delegate { this.lblFileErr.Visible = true; this.lblFileErr.Text = $"Error writing file: {@fullFileName}"; });
                     }
 
-                    this.BeginInvoke((MethodInvoker)delegate { this.TextBoxSubscriber.Text = item; });
+                    // this.BeginInvoke((MethodInvoker)delegate { this.TextBoxSubscriber.Text = item; });
                 }
             }
             else 
@@ -1446,7 +1446,7 @@ namespace MQTTnet.GetLockApp.WinForm
                     this.BeginInvoke((MethodInvoker)delegate { this.lblFileErr.Visible = true; this.lblFileErr.Text = $"Error writing file: {@fullFileName}"; });
                 }
 
-                this.BeginInvoke((MethodInvoker)delegate { this.TextBoxSubscriber.Text = item; });
+                // this.BeginInvoke((MethodInvoker)delegate { this.TextBoxSubscriber.Text = item; });
             }
         }
 
@@ -1563,7 +1563,7 @@ namespace MQTTnet.GetLockApp.WinForm
                 this.BeginInvoke((MethodInvoker)delegate { this.lblFileErr.Visible = true; this.lblFileErr.Text = $"Error writing file: {@fullFileNameMessage}"; });
             }
 
-            this.BeginInvoke((MethodInvoker)delegate { this.TextBoxSubscriber.Text = item; });
+            // this.BeginInvoke((MethodInvoker)delegate { this.TextBoxSubscriber.Text = item; });
         }
 
     }
